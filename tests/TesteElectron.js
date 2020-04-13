@@ -1,4 +1,5 @@
 const { app, BrowserWindow } = require('electron')
+//const a = require('./a')
 
 function createWindow () {
   // Cria uma janela de navegação.
@@ -11,10 +12,10 @@ function createWindow () {
   })
 
   // and load the index.html of the app.
-  win.loadFile('index.html')
+  win.loadFile('./tests/index.html')
 
   // Open the DevTools.
-  //win.webContents.openDevTools()
+  win.webContents.openDevTools()
 }
 
 app.allowRendererProcessReuse = true
@@ -39,4 +40,11 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow()
   }
+
 })
+
+let a = () => {
+
+  console.log("aaa")
+
+}

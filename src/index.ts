@@ -1,42 +1,68 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, globalShortcut } from 'electron'
 
-function createWindow () {
-    // Cria uma janela de navegação.
-    const win = new BrowserWindow({
-      width: 800,
-      height: 600,
-      webPreferences: {
-        nodeIntegration: true,
-      }
-    })
-  
-    // and load the index.html of the app.
-    win.loadFile('./html/indexElectron.html')
-  
-    // Open the DevTools.
-    //win.webContents.openDevTools()
-  }
-  
-  app.allowRendererProcessReuse = true
-  
-  // This method will be called when Electron has finished
-  // initialization and is ready to create browser windows.
-  // Algumas APIs podem ser usadas somente depois que este evento ocorre.
-  app.whenReady().then(createWindow)
-  
-  // Quit when all windows are closed.
-  app.on('window-all-closed', () => {
-    // No macOS é comum para aplicativos e sua barra de menu 
-    // permaneçam ativo até que o usuário explicitamente encerre com Cmd + Q
-    if (process.platform !== 'darwin') {
-      app.quit()
-    }
-  })
-  
-  app.on('activate', () => {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow()
-    }
-  })
+let win: BrowserWindow
+
+let Dev: boolean = false
+
+function createWindow() {
+
+	// Cria uma janela de navegação.
+	win = new BrowserWindow({
+		width: 800,
+		height: 600,
+		webPreferences: {
+			nodeIntegration: true,
+		}
+	})
+
+	// and load the index.html of the app.
+	win.loadFile('./html/index.html')
+
+	// Open the DevTools.
+	//win.webContents.openDevTools()
+}
+
+app.allowRendererProcessReuse = true
+
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Algumas APIs podem ser usadas somente depois que este evento ocorre.
+app.whenReady().then(() => {
+
+	globalShortcut.register('f12', () => {
+
+		if (!Dev) {
+
+			win.webContents.openDevTools()
+			Dev = true
+
+		}
+		else {
+
+			win.webContents.closeDevTools()
+			Dev = false
+
+		}
+
+	})
+
+	createWindow()
+
+})
+
+// Quit when all windows are closed.
+app.on('window-all-closed', () => {
+	// No macOS é comum para aplicativos e sua barra de menu 
+	// permaneçam ativo até que o usuário explicitamente encerre com Cmd + Q
+	if (process.platform !== 'darwin') {
+		app.quit()
+	}
+})
+
+app.on('activate', () => {
+	// On macOS it's common to re-create a window in the app when the
+	// dock icon is clicked and there are no other windows open.
+	if (BrowserWindow.getAllWindows().length === 0) {
+		createWindow()
+	}
+})

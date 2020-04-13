@@ -13,6 +13,8 @@
     "electron": "8.2.1"
   },
   "dependencies": {
-    "axios": "^0.19.2"
+    "axios": "^0.19.2",
+    "emfn": "^1.0.3",
+    "trello-node-api": "0.0.9"
   }
 }
