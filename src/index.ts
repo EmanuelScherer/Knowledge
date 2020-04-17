@@ -46,6 +46,12 @@ app.whenReady().then(() => {
 
 	})
 
+	globalShortcut.register('esc', () => {
+
+		win.loadFile("./html/index.html")
+
+	})
+
 	createWindow()
 
 })
