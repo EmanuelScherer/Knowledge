@@ -1,0 +1,34 @@
+{
+
+    "name": "Testador",
+
+    "area": "Teste",
+
+    "login": {
+
+        "email": "teste.teste@alo.com.br",
+        "senha": "aaaaaaaaaa"
+
+    },
+
+    "teams": [
+
+        {
+
+            "name": "TesteTeam",
+            
+            "users" : [
+
+                "Testador",
+                "Jorge",
+                "Cleiton",
+                "Jozias",
+                "Arnaldo"
+
+            ]
+
+        }
+
+    ]
+
+}

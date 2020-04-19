@@ -1,0 +1,54 @@
+{
+
+    "name": "Emanuel",
+
+    "area": "InnovationCenter",
+
+    "login": {
+
+        "email": "emanuel.scherer@meta.com.br",
+        "senha": "qUkS@Skv1"
+
+    },
+
+    "teams": [
+
+        {
+
+            "name": "InnovationCenter",
+            
+            "users" : [
+
+                "Emanuel",
+                "João",
+                "Eric",
+                "Claudio",
+                "Thiago",
+                "Makisine",
+                "Brendan",
+                "Leonardo",
+                "Fabricio",
+                "Romulo",
+                "Nicolas"
+
+            ]
+
+        },
+        {
+
+            "name": "O time 2 para testar",
+            
+            "users" : [
+
+                "Emanuel",
+                "Player2",
+                "Player3",
+                "Player4"
+
+            ]
+
+        }
+
+    ]
+
+}
