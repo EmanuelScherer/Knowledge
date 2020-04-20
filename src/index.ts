@@ -54,6 +54,8 @@ app.whenReady().then(() => {
 
 	createWindow()
 
+	win.maximize()
+
 })
 
 // Quit when all windows are closed.

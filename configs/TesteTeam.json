@@ -19,11 +19,27 @@
             
             "users" : [
 
-                "Testador",
-                "Jorge",
-                "Cleiton",
-                "Jozias",
-                "Arnaldo"
+                {
+                    "name": "Testador",
+                    "id": "5e2b22035793c41dd1018cf5"
+                },
+                {
+                    "name": "Jorge",
+                    "id": ""
+                },
+                {
+                    "name": "Cleiton",
+                    "id": ""
+                },
+                {
+                    "name": "Jozias",
+                    "id": ""
+                },
+                {
+                    "name": "Arnaldo",
+                    "id": ""
+
+                }
 
             ]
 

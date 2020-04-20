@@ -19,17 +19,50 @@
             
             "users" : [
 
-                "Emanuel",
-                "João",
-                "Eric",
-                "Claudio",
-                "Thiago",
-                "Makisine",
-                "Brendan",
-                "Leonardo",
-                "Fabricio",
-                "Romulo",
-                "Nicolas"
+                {
+                    "name": "Emanuel",
+                    "id": "5e2b22035793c41dd1018cf5"
+                },
+                {
+                    "name": "João",
+                    "id": ""
+                },
+                {
+                    "name": "Eric",
+                    "id": ""
+                },
+                {
+                    "name": "Nicolas",
+                    "id": ""
+                },
+                {
+                    "name": "Thiago",
+                    "id": ""
+                },
+                {
+                    "name": "Claudio",
+                    "id": ""
+                },
+                {
+                    "name": "Makisine",
+                    "id": ""
+                },
+                {
+                    "name": "Leonardo",
+                    "id": ""
+                },
+                {
+                    "name": "Fabrico",
+                    "id": ""
+                },
+                {
+                    "name": "Romulo",
+                    "id": ""
+                },
+                {
+                    "name": "Brendan",
+                    "id": ""
+                }
 
             ]
 
@@ -40,10 +73,22 @@
             
             "users" : [
 
-                "Emanuel",
-                "Player2",
-                "Player3",
-                "Player4"
+                {
+                    "name": "Emanuel",
+                    "id": "5e2b22035793c41dd1018cf5"
+                },
+                {
+                    "name": "Player2",
+                    "id": ""
+                },
+                {
+                    "name": "Player3",
+                    "id": ""
+                },
+                {
+                    "name": "Player4",
+                    "id": ""
+                }
 
             ]
 
