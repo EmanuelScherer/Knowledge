@@ -17,6 +17,41 @@
 
             "name": "InnovationCenter",
             
+            "trello": {
+
+                "board": "5e94733d9aa4b24167774a96",
+                
+                "lists": [
+
+                    {
+
+                        "name": "To Do",
+                        "id": "5e94733d9aa4b24167774a97"
+
+                    },
+                    {
+
+                        "name": "Doing",
+                        "id": "5e94733d9aa4b24167774a98"
+
+                    },
+                    {
+
+                        "name": "Done",
+                        "id": "5e94733d9aa4b24167774a99"
+
+                    },
+                    {
+
+                        "name": "Blocked",
+                        "id": "5e9de6d453bfa7776586c234"
+
+                    }
+
+                ]
+
+            },
+
             "users" : [
 
                 {

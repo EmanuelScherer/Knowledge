@@ -1,6 +1,7 @@
 import * as fs from 'fs'
 import * as electron from 'electron'
 import { v4 as uuidv4 } from 'uuid'
+import * as TrelloNodeAPI from 'trello-node-api';
 
 const con = electron.remote.getGlobal('console')
 
@@ -23,6 +24,41 @@ interface OConfig {
 
             "name": string,
             
+            "trello": {
+
+                "board": "",
+                
+                "lists": [
+
+                    {
+
+                        "name": "To Do",
+                        "id": ""
+
+                    },
+                    {
+
+                        "name": "Doing",
+                        "id": ""
+
+                    },
+                    {
+
+                        "name": "Done",
+                        "id": ""
+
+                    },
+                    {
+
+                        "name": "Blocked",
+                        "id": ""
+
+                    }
+
+                ]
+
+            },
+
             "users" : [
                 
                 {
@@ -55,6 +91,8 @@ const select_user: HTMLSelectElement | null = document.querySelector("#select_us
 
 const div_tarefas: HTMLDivElement | null = document.querySelector("div#tarefas")
 const div_tarefas2: HTMLDivElement | null = document.querySelector("div#d_tf")
+
+const bt_add: NodeListOf<HTMLButtonElement> | null = document.querySelectorAll("button#bt_add")
 
 const AddToSelect = (id: string, option: string, group?: string) => {
 
@@ -147,7 +185,7 @@ const AddNode = (tarefa: string, id: string, impedida: boolean, impedimento?: st
 
                 <div style="padding: 10px; margin-top: 10px; margin-bottom: 10px;" id="`+id+`">
 
-                    <textarea disabled id="text_tarefa_`+id+`" style="background-color: #2b3f4e; text-align: center;">`+tarefa+`</textarea>
+                    <textarea id="text_tarefa_`+id+`" style="background-color: #2b3f4e; text-align: center;" placeholder="Expecifique a tarefa..." required>`+tarefa+`</textarea>
 
                     <div class="select-wrapper" id="select_cinza" style="margin-top: 10px;">
 
@@ -179,7 +217,7 @@ const AddNode = (tarefa: string, id: string, impedida: boolean, impedimento?: st
 
                 <div style="padding: 10px; margin-top: 10px; margin-bottom: 10px;" id="`+id+`">
 
-                    <textarea id="text_tarefa_`+id+`" style="background-color: #2b3f4e; text-align: center;">`+tarefa+`</textarea>
+                    <textarea id="text_tarefa_`+id+`" style="background-color: #2b3f4e; text-align: center;" placeholder="Expecifique a tarefa..." required>`+tarefa+`</textarea>
 
                     <div class="select-wrapper" id="select_cinza" style="margin-top: 10px;">
 
@@ -204,8 +242,6 @@ const AddNode = (tarefa: string, id: string, impedida: boolean, impedimento?: st
 
     }
 
-    console.log(div_tarefas2)
-
     div_tarefas2?.insertAdjacentHTML("beforeend", HTML)
 
     const select: HTMLSelectElement | null | undefined = div_tarefas2?.querySelector("select#select_status_"+id)
@@ -227,6 +263,67 @@ const AddNode = (tarefa: string, id: string, impedida: boolean, impedimento?: st
     })
 
 }
+
+bt_add?.forEach(b => {
+
+    b.addEventListener('click', (e) => {
+
+        div_tarefas?.setAttribute("style", "display: block")
+    
+        const id = uuidv4() 
+    
+        let HTML = `
+        
+            <div style="background-color: #22323f; id="tf">
+    
+                <div style="padding: 10px; margin-top: 10px; margin-bottom: 10px;" id="`+id+`">
+    
+                    <textarea id="text_tarefa_`+id+`" style="background-color: #2b3f4e; text-align: center;" placeholder="Expecifique a tarefa..." required></textarea>
+    
+                    <div class="select-wrapper" id="select_cinza" style="margin-top: 10px;">
+    
+                        <select id="select_status_`+id+`" style="color: white; background-color: #2b3f4e;">
+    
+                            <option selected>Vou fazer hoje</option>
+                            <option>Não Vou fazer hoje</option>
+                            <option>Concluido</option>
+                            <option>Impedido</option>
+    
+                        </select>
+    
+                        <textarea id="text_impedimento_`+id+`" style="background-color: #2b3f4e; text-align: center; margin-top: 10px; display: none" placeholder="Expecifique o impedimento..." required></textarea>
+    
+                    </div>
+    
+                </div>
+    
+            </div>
+    
+        `
+    
+        div_tarefas2?.insertAdjacentHTML("beforeend", HTML)
+    
+        const select: HTMLSelectElement | null | undefined = div_tarefas2?.querySelector("select#select_status_"+id)
+        const text_impedimento: HTMLTextAreaElement | null | undefined = div_tarefas2?.querySelector("textarea#text_impedimento_"+id)
+    
+        select?.addEventListener("change", (e) => {
+    
+            if (select.value == "Impedido") {
+    
+                text_impedimento?.setAttribute("style", "background-color: #2b3f4e; text-align: center; margin-top: 10px; display: block")
+    
+            }
+            else {
+    
+                text_impedimento?.setAttribute("style", "background-color: #2b3f4e; text-align: center; margin-top: 10px; display: none")
+    
+            }
+    
+        })
+    
+    })
+
+})
 
 select_user?.addEventListener('change', (e) => {
 
@@ -315,3 +412,28 @@ from_team?.addEventListener('submit', (e) => {
     e.preventDefault()
 
 })
+
+class Trello {
+
+    trello = new TrelloNodeAPI();
+
+    constructor(key: string, token: string) {
+
+        this.trello.setApiKey(key);
+        this.trello.setOauthToken(token);
+
+    }
+
+    GetTrello = (user: string) => {
+
+        
+
+    }
+
+    PostTrello = () => {
+
+
+
+    }
+
+}
