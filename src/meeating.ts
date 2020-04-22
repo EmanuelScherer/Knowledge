@@ -1,6 +1,6 @@
-import * as fs from 'fs'
-import * as electron from 'electron'
-import { v4 as uuidv4 } from 'uuid'
+import * as fs from 'fs';
+import * as electron from 'electron';
+import { v4 as uuidv4 } from 'uuid';
 import * as TrelloNodeAPI from 'trello-node-api';
 
 const con = electron.remote.getGlobal('console')
@@ -83,7 +83,7 @@ let configs: OConfig[] = []
 
 const configsInDir = fs.readdirSync("./configs")
 
-const from_team: HTMLFormElement | null = document.querySelector("select#form_team")
+const from_team: HTMLFormElement | null = document.querySelector("form#form_team")
 const select_team: HTMLSelectElement | null = document.querySelector("#select_team")
 const div_2: HTMLElement | null = document.getElementById("2")
 
@@ -93,6 +93,31 @@ const div_tarefas: HTMLDivElement | null = document.querySelector("div#tarefas")
 const div_tarefas2: HTMLDivElement | null = document.querySelector("div#d_tf")
 
 const bt_add: NodeListOf<HTMLButtonElement> | null = document.querySelectorAll("button#bt_add")
+
+class Trello {
+
+    trello = new TrelloNodeAPI();
+
+    constructor(key: string, token: string) {
+
+        this.trello.setApiKey(key);
+        this.trello.setOauthToken(token);
+
+    }
+
+    GetTrello = (user: string) => {
+
+        
+
+    }
+
+    PostTrello = () => {
+
+
+
+    }
+
+}
 
 const AddToSelect = (id: string, option: string, group?: string) => {
 
@@ -232,7 +257,7 @@ const AddNode = (tarefa: string, id: string, impedida: boolean, impedimento?: st
 
                     </div>
 
-                    <textarea id="text_impedimento_`+id+`" style="background-color: #2b3f4e; text-align: center; margin-top: 10px; display: none" placeholder="Expecifique o impedimento..." required></textarea>
+                    <textarea id="text_impedimento_`+id+`" style="background-color: #2b3f4e; text-align: center; margin-top: 10px; display: none" placeholder="Expecifique o impedimento..."></textarea>
 
                 </div>
 
@@ -252,11 +277,13 @@ const AddNode = (tarefa: string, id: string, impedida: boolean, impedimento?: st
         if (select.value == "Impedido") {
 
             text_impedimento?.setAttribute("style", "background-color: #2b3f4e; text-align: center; margin-top: 10px; display: block")
+            text_impedimento?.setAttribute("required", "true")
 
         }
         else {
 
             text_impedimento?.setAttribute("style", "background-color: #2b3f4e; text-align: center; margin-top: 10px; display: none")
+            text_impedimento?.setAttribute("required", "false")
 
         }
 
@@ -291,7 +318,7 @@ bt_add?.forEach(b => {
     
                         </select>
     
-                        <textarea id="text_impedimento_`+id+`" style="background-color: #2b3f4e; text-align: center; margin-top: 10px; display: none" placeholder="Expecifique o impedimento..." required></textarea>
+                        <textarea id="text_impedimento_`+id+`" style="background-color: #2b3f4e; text-align: center; margin-top: 10px; display: none" placeholder="Expecifique o impedimento..."></textarea>
     
                     </div>
     
@@ -405,35 +432,10 @@ select_team?.addEventListener('change', (e) => {
 
 from_team?.addEventListener('submit', (e) => {
 
-    const a: HTMLSelectElement | null = document.querySelector("select#select_team")
-
-    con.log(a?.value)
-
     e.preventDefault()
 
+    const tr = new Trello("c8055ea81e83e2f2aee0a17139667194", "8dd16011215f298a99a2758e8e89e5ca70bee575bbcfe19f8a87dfdba5acb3f0")
+
+    const div_tf: HTMLDivElement | null = document.querySelector("div#d_tf")
+
 })
-
-class Trello {
-
-    trello = new TrelloNodeAPI();
-
-    constructor(key: string, token: string) {
-
-        this.trello.setApiKey(key);
-        this.trello.setOauthToken(token);
-
-    }
-
-    GetTrello = (user: string) => {
-
-        
-
-    }
-
-    PostTrello = () => {
-
-
-
-    }
-
-}
