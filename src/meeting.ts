@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as electron from 'electron';
 import { v4 as uuidv4 } from 'uuid';
-import * as TrelloNodeAPI from 'trello-node-api';
+import axios from 'axios'
 
 const con = electron.remote.getGlobal('console')
 
@@ -96,22 +96,133 @@ const bt_add: NodeListOf<HTMLButtonElement> | null = document.querySelectorAll("
 
 class Trello {
 
-    trello = new TrelloNodeAPI();
+    key: string
+    token: string
 
     constructor(key: string, token: string) {
 
-        this.trello.setApiKey(key);
-        this.trello.setOauthToken(token);
+        this.key = key;
+        this.token = token;
 
     }
 
-    GetTrello = (user: string) => {
+    GetTrello = async (id: string, name: string, team: string, ) => {
 
-        
+        interface ReturnList {
+                
+            "id": string,
+            "checkItemStates": null | boolean,
+            "closed": boolean,
+            "dateLastActivity": string,
+            "desc": "",
+            "descData": null,
+            "dueReminder": null,
+            "idBoard": string,
+            "idList": string,
+            "idMembersVoted": [string | null],
+            "idShort": number,
+            "idAttachmentCover": null | string,
+            "idLabels": [string | null],
+            "manualCoverAttachment": boolean,
+            "name": string,
+            "pos": number,
+            "shortLink": string,
+            "isTemplate": boolean,
+            "badges": {
+                "attachmentsByType": {
+                    "trello": {
+                        "board": number,
+                        "card": number
+                    }
+                },
+                "location": boolean,
+                "votes": number,
+                "viewingMemberVoted": boolean,
+                "subscribed": boolean,
+                "fogbugz": string,
+                "checkItems": number,
+                "checkItemsChecked": number,
+                "checkItemsEarliestDue": null,
+                "comments": string[],
+                "attachments": number,
+                "description": boolean,
+                "due": null,
+                "dueComplete": boolean
+            },
+            "dueComplete": boolean,
+            "due": null,
+            "idChecklists": string[],
+            "idMembers": [
+                string
+            ],
+            "labels": string[],
+            "shortUrl": string,
+            "subscribed": boolean,
+            "url": string,
+            "cover": {
+                "idAttachment": null | string,
+                "color": null | string,
+                "idUploadedBackground": null | string,
+                "size": string,
+                "brightness": string
+            }
+
+        }
+
+        for (let cf in configs) {
+
+            for (let t in configs[cf].teams) {
+
+                if (configs[cf].teams[t].name == team) {
+
+                    for (let l in configs[cf].teams[t].trello.lists) {
+
+                        await axios.get("https://api.trello.com/1/lists/"+configs[cf].teams[t].trello.lists[l].id+"/cards?key="+this.key+"&token="+this.token)
+                        .then(r => {
+
+                            let res: ReturnList[] = r.data
+
+                            for (let c in res) {
+
+                                if (res[c].idMembers.includes(id)) {
+
+                                    switch (configs[cf].teams[t].trello.lists[l].name) {
+                                   
+                                        case "To Do": case "Doing":
+
+                                            AddNode(res[c].name, id, false);
+                                            break;
+
+                                        case "Done":
+
+                                            continue;
+
+                                        case "Blocked":
+
+                                            AddNode(res[c].name, id, true, res[c].desc.replace("Impedimento:", ""));
+                                            break;
+
+                                    }
+
+                                }
+
+                            }
+
+                        })
+
+                    }
+
+
+                }
+
+
+            }
+
+        }
 
     }
 
-    PostTrello = () => {
+    PostTrello = (Doto: object[], Doing: object[], Blocked: object[], Done: object[]) => {
 
 
 
@@ -197,8 +308,6 @@ for (let file in configsInDir) {
 }
 
 const AddNode = (tarefa: string, id: string, impedida: boolean, impedimento?: string) => {
-
-    div_tarefas?.setAttribute("style", "display: block")
 
     let HTML = ""
 
@@ -352,21 +461,58 @@ bt_add?.forEach(b => {
 
 })
 
-select_user?.addEventListener('change', (e) => {
+select_user?.addEventListener('change', async (e) => {
 
-    for (let i = div_tarefas2?.children.length || 1; i > 1; i--) {
+    const User = select_user.value
+    const Team = select_team?.value
 
-        div_tarefas2?.removeChild(div_tarefas2.children[i-1])
+    if (div_tarefas2 != undefined) {
+
+        for (let i = div_tarefas2?.children.length || 0; i >= 1; i--) {
+
+            div_tarefas2?.removeChild(div_tarefas2.children[i-1])
+
+        }
 
     }
 
     if (select_user.value != "") {
 
-        AddNode("Tarefa1", uuidv4(), true, "Impedimento1")
-        AddNode("Tarefa2", uuidv4(), true, "Impedimento2")
-        AddNode("Tarefa3", uuidv4(), false)
-        AddNode("Tarefa4", uuidv4(), false)
-        AddNode("Tarefa5", uuidv4(), true, "Impedimento3")
+        div_tarefas?.setAttribute("style", "display: block")
+
+        console.log("user mudado")
+
+        const tr = new Trello("c8055ea81e83e2f2aee0a17139667194", "3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
+
+        console.log(Team)
+
+        for (let cf in configs) {
+
+            for (let t in configs[cf].teams) {
+
+                if (configs[cf].teams[t].name == Team) {
+
+                    console.log("a")
+
+                    for (let u in configs[cf].teams[t].users) {
+
+                        if (configs[cf].teams[t].users[u].name == User) {
+
+                            console.log("pega trello")
+
+                            await tr.GetTrello(configs[cf].teams[t].users[u].id, User, Team)
+                            break
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
 
     }
     else {
@@ -434,8 +580,10 @@ from_team?.addEventListener('submit', (e) => {
 
     e.preventDefault()
 
-    const tr = new Trello("c8055ea81e83e2f2aee0a17139667194", "8dd16011215f298a99a2758e8e89e5ca70bee575bbcfe19f8a87dfdba5acb3f0")
+    const tr = new Trello("c8055ea81e83e2f2aee0a17139667194", "3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
 
     const div_tf: HTMLDivElement | null = document.querySelector("div#d_tf")
+
+
 
 })
