@@ -3,9 +3,9 @@ import * as electron from 'electron';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 
-const ProgressBar = require('../src/electron-progressbar/source/index')
-
 const con = electron.remote.getGlobal('console')
+
+const ProgressBar = electron.remote.getGlobal('ProgressBar');
 
 interface OConfig {
 
@@ -286,21 +286,38 @@ class Trello {
 
         console.log("posting: "+JSON.stringify(Todo)+"\n\n"+JSON.stringify(Doing)+"\n\n"+JSON.stringify(Blocked)+"\n\n"+JSON.stringify(Done))
 
+        const progressBar = new ProgressBar({
+            text: 'Enviando tarefas para Trello...',
+            detail: 'Espere...'
+        });
+          
+        progressBar.on('completed', function() {
+            console.log("post concluido")
+            progressBar.detail = 'Enviado. Fechando...';
+        })
+
+        progressBar.on('aborted', function() {
+            console.info(`post abortado`);
+        });
+          
         if (Todo[0] != undefined) {
 
             for (let i in Todo) {
 
                 console.log("posting Todo")
+                progressBar.detail = "Enviando Todo"
 
                 await axios.put("https://api.trello.com/1/cards/"+Todo[i].Card_Id+"?idList="+LTodo+"&key="+this.key+"&token="+this.token)
                 .then(r => {
 
-                    alert("deu")
+                    //alert("deu")
 
                 })
                 .catch(e => {
 
-                    alert("deu erro: "+e)
+                    //alert("deu erro: "+e)
+                    progressBar.detail = "Um erro ocorreu: "+e
+                    progressBar.close()
 
                 })
 
@@ -313,16 +330,18 @@ class Trello {
             for (let i in Doing) {
 
                 console.log("posting Doing")
+                progressBar.detail = "Enviando Doing"
 
                 await axios.put("https://api.trello.com/1/cards/"+Doing[i].Card_Id+"?idList="+LDoing+"&key="+this.key+"&token="+this.token)
                 .then(r => {
 
-                    alert("deu")
+                    // alert("deu")
 
                 })
                 .catch(e => {
 
-                    alert("deu erro: "+e)
+                    progressBar.detail = "Um erro ocorreu: "+e
+                    progressBar.close()
 
                 })
 
@@ -335,16 +354,18 @@ class Trello {
             for (let i in Blocked) {
 
                 console.log("posting Blocked")
+                progressBar.detail = "Enviando Blocked"
 
-                await axios.put("https://api.trello.com/1/cards/"+Blocked[i].Card_Id+"?idList="+LBlocked+"&key="+this.key+"&token="+this.token)
+                await axios.put("https://api.trello.com/1/cards/"+Blocked[i].Card_Id+"?idList="+LBlocked+"&desc=Impedimento: "+Blocked[i].Impedimento+"&key="+this.key+"&token="+this.token)
                 .then(r => {
 
-                    alert("deu")
+                    // alert("deu")
 
                 })
                 .catch(e => {
 
-                    alert("deu erro: "+e)
+                    progressBar.detail = "Um erro ocorreu: "+e
+                    progressBar.close()
 
                 })
 
@@ -357,16 +378,18 @@ class Trello {
             for (let i in Done) {
 
                 console.log("posting Done")
+                progressBar.detail = "Enviando Done"
 
                 await axios.put("https://api.trello.com/1/cards/"+Done[i].Card_Id+"?idList="+LDone+"&key="+this.key+"&token="+this.token)
                 .then(r => {
 
-                    alert("deu")
+                    // alert("deu")
 
                 })
                 .catch(e => {
 
-                    alert("deu erro: "+e)
+                    progressBar.detail = "Um erro ocorreu: "+e
+                    progressBar.close()
 
                 })
 
@@ -374,30 +397,7 @@ class Trello {
 
         }
 
-        let progressBar = new ProgressBar({
-            text: 'Preparing data...',
-            detail: 'Wait...'
-        });
-          
-          progressBar
-            .on('completed', function() {
-              console.info(`completed...`);
-              progressBar.detail = 'Task completed. Exiting...';
-            })
-            .on('aborted', function() {
-              console.info(`aborted...`);
-            });
-          
-          // launch a task...
-          // launchTask();
-          
-          // when task is completed, set the progress bar to completed
-          // ps: setTimeout is used here just to simulate an interval between the start and the end of a task
-          setTimeout(function() {
-            progressBar.setCompleted();
-          }, 3000);
-
-        console.log("posting concluido")
+        progressBar.setCompleted();
 
     }
 

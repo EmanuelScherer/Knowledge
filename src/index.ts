@@ -1,5 +1,7 @@
 import { app, BrowserWindow, globalShortcut } from 'electron'
 
+const globalAny: any = global
+
 let win: BrowserWindow
 
 let Dev: boolean = false
@@ -53,6 +55,10 @@ app.whenReady().then(() => {
 	})
 
 	createWindow()
+
+	const ProgressBar = require('../src/electron-progressbar/source/index');
+
+	globalAny.ProgressBar = ProgressBar
 
 	win.maximize()
 

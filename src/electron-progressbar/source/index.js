@@ -1,6 +1,7 @@
 'use strict';
 
-const BrowserWindow = require('electron').remote.BrowserWindow;
+const BrowserWindow = require('electron').BrowserWindow;
+const Electron = require('electron')
 
 // use 'extend' because 'Object.assign' doesn't work for deep copy
 const extend = require('extend');
@@ -32,14 +33,17 @@ class ProgressBar {
 			},
 			
 			browserWindow: {
-				parent: null,
+				parent: BrowserWindow.getAllWindows()[0],
 				modal: true,
 				resizable: false,
 				closable: false,
 				minimizable: false,
 				maximizable: false,
 				width: 500,
-				height: 170
+				height: 170,
+				webPreferences: {
+					nodeIntegration: true
+				}
 			}
 		};
 		
@@ -356,6 +360,7 @@ const htmlContent = `
 				margin: 20px;
 				margin-bottom: 0;
 				font: 13px normal Verdana, Arial, "sans-serif";
+				background-color: #2b3f4e;
 			}
 			
 			#text{
@@ -365,6 +370,7 @@ const htmlContent = `
 				font-weight: bold;
 				padding: 5px 0;
 				word-break: break-all;
+				color: white;
 			}
 			
 			#detail{
@@ -372,6 +378,7 @@ const htmlContent = `
 				margin: 5px 0;
 				padding: 5px 0;
 				word-break: break-all;
+				color: white;
 			}
 			
 			#progressBarContainer{
@@ -551,4 +558,4 @@ const htmlContent = `
 </html>
 `;
 
-module.exports = ProgressBar;
+module.exports = ProgressBar
