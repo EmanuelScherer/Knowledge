@@ -17,10 +17,14 @@
     "@types/uuid": "^7.0.2",
     "axios": "^0.19.2",
     "electron": "8.2.1",
+    "electron-alert": "^0.1.5",
     "electron-progressbar": "^1.2.0",
     "emfn": "^1.0.3",
     "express": "^4.17.1",
+    "gulp": "^4.0.2",
     "jquery": "^3.5.0",
+    "slim-select": "^1.26.0",
+    "sweetalert2": "^9.10.12",
     "typescript": "^3.8.3",
     "uuid": "^7.0.3"
   }

@@ -2,6 +2,9 @@ import * as fs from 'fs';
 import * as electron from 'electron';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
+import Swal from 'sweetalert2';
+
+const SlimSelect = require('slim-select')
 
 const con = electron.remote.getGlobal('console')
 
@@ -121,6 +124,8 @@ class Trello {
 
     GetTrello = async (id: string, name: string, team: string, ) => {
 
+        let b = true
+
         interface ReturnList {
                 
             "id": string,
@@ -182,6 +187,21 @@ class Trello {
 
         }
 
+        const progressBar = new ProgressBar({
+            text: 'Carregando tarefas de '+name+'...',
+            detail: 'Espere...'
+        });
+          
+        progressBar.on('completed', function() {
+            console.log("post concluido")
+            progressBar.detail = 'Carregado. Fechando...';
+        })
+
+        progressBar.on('aborted', function() {
+            console.info(`get abortado`);
+            Swal.fire('O trello não respondeu :(', 'Infelismente o sistema só funciona com o trello, tente novamente mais tarde', 'error')
+        });
+
         for (let cf in configs) {
 
             for (let t in configs[cf].teams) {
@@ -190,9 +210,9 @@ class Trello {
 
                     for (let l in configs[cf].teams[t].trello.lists) {
 
-                        await axios.get("https://api.trello.com/1/lists/"+configs[cf].teams[t].trello.lists[l].id+"/cards?key="+this.key+"&token="+this.token)
+                        await axios.get("https://api.trello.com/1/listsl/"+configs[cf].teams[t].trello.lists[l].id+"/cards?key="+this.key+"&token="+this.token)
                         .then(r => {
-
+    
                             let res: ReturnList[] = r.data
 
                             for (let c in res) {
@@ -200,7 +220,7 @@ class Trello {
                                 if (res[c].idMembers.includes(id)) {
 
                                     switch (configs[cf].teams[t].trello.lists[l].name) {
-                                   
+                                    
                                         case "To Do": case "Doing":
 
                                             AddNode(res[c].name, res[c].id, false);
@@ -221,6 +241,21 @@ class Trello {
 
                             }
 
+                            setTimeout(() => {
+
+                                progressBar.setCompleted();
+
+                            }, 1000)
+
+                        })
+                        .catch(e => {
+    
+                            progressBar.close();
+    
+                            console.log(e)
+    
+                            b = false
+
                         })
 
                     }
@@ -232,6 +267,8 @@ class Trello {
             }
 
         }
+
+        return b
 
     }
 
@@ -285,7 +322,7 @@ class Trello {
         }
 
         console.log("posting: "+JSON.stringify(Todo)+"\n\n"+JSON.stringify(Doing)+"\n\n"+JSON.stringify(Blocked)+"\n\n"+JSON.stringify(Done))
-
+          
         const progressBar = new ProgressBar({
             text: 'Enviando tarefas para Trello...',
             detail: 'Espere...'
@@ -299,7 +336,7 @@ class Trello {
         progressBar.on('aborted', function() {
             console.info(`post abortado`);
         });
-          
+
         if (Todo[0] != undefined) {
 
             for (let i in Todo) {
@@ -318,6 +355,8 @@ class Trello {
                     //alert("deu erro: "+e)
                     progressBar.detail = "Um erro ocorreu: "+e
                     progressBar.close()
+
+                    return false
 
                 })
 
@@ -343,6 +382,8 @@ class Trello {
                     progressBar.detail = "Um erro ocorreu: "+e
                     progressBar.close()
 
+                    return false
+
                 })
 
             }
@@ -366,6 +407,8 @@ class Trello {
 
                     progressBar.detail = "Um erro ocorreu: "+e
                     progressBar.close()
+
+                    return false
 
                 })
 
@@ -391,6 +434,8 @@ class Trello {
                     progressBar.detail = "Um erro ocorreu: "+e
                     progressBar.close()
 
+                    return false
+
                 })
 
             }
@@ -398,6 +443,7 @@ class Trello {
         }
 
         progressBar.setCompleted();
+        return true
 
     }
 
@@ -480,6 +526,24 @@ for (let file in configsInDir) {
 
 }
 
+interface Multi {
+
+    multi: any
+    id: String,
+    value: String[]
+
+}
+
+let Multis: Multi[] = []
+
+const GeraMulti = (id: string) => {
+
+    const multi = new SlimSelect({select: "."+id}) 
+
+    Multis.push()
+
+}
+
 const AddNode = (tarefa: string, id: string, impedida: boolean, impedimento?: string) => {
 
     let HTML = ""
@@ -508,6 +572,20 @@ const AddNode = (tarefa: string, id: string, impedida: boolean, impedimento?: st
                             </select>
 
                             <textarea id="text_impedimento_`+id+`" style="background-color: #2b3f4e; text-align: center; margin-top: 10px;" placeholder="Expecifique o impedimento..." required>`+impedimento+`</textarea>
+
+                            <select id="multiple_`+id+`" class="multiple_`+id+`" multiple>
+                                <option value="value 1">Value 1</option>
+                                <option value="value 2">Value 2</option>
+                                <option value="value 3">Value 3</option>
+                            </select>
+
+                            <script>
+                            
+                                new SlimSelect({
+                                    select: '#multiple'
+                                })
+                              
+                            </script>
 
                         </div>
 
@@ -545,6 +623,12 @@ const AddNode = (tarefa: string, id: string, impedida: boolean, impedimento?: st
 
                     <textarea id="text_impedimento_`+id+`" style="background-color: #2b3f4e; text-align: center; margin-top: 10px; display: none" placeholder="Expecifique o impedimento..."></textarea>
 
+                    <select id="multiple_`+id+`" class="multiple_`+id+`" multiple>
+                        <option value="value 1">Value 1</option>
+                        <option value="value 2">Value 2</option>
+                        <option value="value 3">Value 3</option>
+                    </select>
+
                 </div>
 
             </div>
@@ -554,6 +638,8 @@ const AddNode = (tarefa: string, id: string, impedida: boolean, impedimento?: st
     }
 
     div_tarefas2?.insertAdjacentHTML("beforeend", HTML)
+
+    GeraMulti("multiple_"+id)
 
     const select: HTMLSelectElement | null | undefined = div_tarefas2?.querySelector("select#select_status_"+id)
     const text_impedimento: HTMLTextAreaElement | null | undefined = div_tarefas2?.querySelector("textarea#text_impedimento_"+id)
@@ -655,7 +741,7 @@ select_user?.addEventListener('change', async (e) => {
 
     if (select_user.value != "") {
 
-        div_tarefas?.setAttribute("style", "display: block")
+        let b = false
 
         console.log("user mudado")
 
@@ -677,7 +763,7 @@ select_user?.addEventListener('change', async (e) => {
 
                             console.log("pega trello")
 
-                            await tr.GetTrello(configs[cf].teams[t].users[u].id, User, Team)
+                            b = await tr.GetTrello(configs[cf].teams[t].users[u].id, User, Team)
                             break
 
                         }
@@ -690,6 +776,18 @@ select_user?.addEventListener('change', async (e) => {
 
         }
 
+        console.log(b)
+
+        if (b) {
+
+            div_tarefas?.setAttribute("style", "display: block")
+        
+        }
+        else {
+
+            div_tarefas?.setAttribute("style", "display: none")
+
+        }
 
     }
     else {
