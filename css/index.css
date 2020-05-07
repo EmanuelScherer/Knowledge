@@ -5,6 +5,7 @@
     color: #2b3f4e;
     width: 100%;
     background-color: rgba(255, 255, 255, 0);
+    padding-top: 10px;
 }
 
 .ss-main .ss-multi-selected {
@@ -84,6 +85,12 @@
     cursor: not-allowed;
     color: #dedede;
     background-color: #324452;
+}
+
+.ss-main .ss-multi-selected .ss-add {
+
+    padding-top: 1%;
+
 }
 
 .swal2-styled.swal2-confirm {

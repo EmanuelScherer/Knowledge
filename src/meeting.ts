@@ -10,6 +10,8 @@ const con = electron.remote.getGlobal('console')
 
 const ProgressBar = electron.remote.getGlobal('ProgressBar');
 
+let JaEscolido: String[] = []
+
 interface OConfig {
 
     "name": string,
@@ -110,6 +112,13 @@ interface ObjTrello {
 
 }
 
+interface UsersConfig {
+
+    name: String,
+    id: String,
+
+}
+
 class Trello {
 
     key: string
@@ -189,11 +198,12 @@ class Trello {
 
         const progressBar = new ProgressBar({
             text: 'Carregando tarefas de '+name+'...',
-            detail: 'Espere...'
+            detail: 'Espere...',
+            title: 'Carregando...'
         });
           
         progressBar.on('completed', function() {
-            console.log("post concluido")
+            console.log("get concluido")
             progressBar.detail = 'Carregado. Fechando...';
         })
 
@@ -210,7 +220,7 @@ class Trello {
 
                     for (let l in configs[cf].teams[t].trello.lists) {
 
-                        await axios.get("https://api.trello.com/1/listsl/"+configs[cf].teams[t].trello.lists[l].id+"/cards?key="+this.key+"&token="+this.token)
+                        await axios.get("https://api.trello.com/1/lists/"+configs[cf].teams[t].trello.lists[l].id+"/cards?key="+this.key+"&token="+this.token)
                         .then(r => {
     
                             let res: ReturnList[] = r.data
@@ -224,6 +234,28 @@ class Trello {
                                         case "To Do": case "Doing":
 
                                             AddNode(res[c].name, res[c].id, false);
+
+                                            let UsersSelect: String[] = []
+
+                                            for (let idm in res[c].idMembers) {
+
+                                                for (let u in configs[cf].teams[t].users) {
+
+                                                    if (configs[cf].teams[t].users[u].id == res[c].idMembers[idm]) {
+
+                                                        UsersSelect.push(configs[cf].teams[t].users[u].name)
+
+                                                    }
+
+                                                }
+
+                                            }
+
+                                            console.log(UsersSelect)
+                                            console.log(Multis[Multis.length-1])
+
+                                            Multis[Multis.length-1].multi.set(UsersSelect)
+                            
                                             break;
 
                                         case "Done":
@@ -249,7 +281,7 @@ class Trello {
 
                         })
                         .catch(e => {
-    
+
                             progressBar.close();
     
                             console.log(e)
@@ -281,11 +313,15 @@ class Trello {
         let LDone = ""
         let LBlocked = ""
 
+        let Users: UsersConfig[] = []
+
         for (let cf in configs) {
 
             for (let t in configs[cf].teams) {
 
                 if (configs[cf].teams[t].name == select_team?.value) {
+
+                    Users = configs[cf].teams[t].users
 
                     for (let l in configs[cf].teams[t].trello.lists) {
 
@@ -325,7 +361,8 @@ class Trello {
           
         const progressBar = new ProgressBar({
             text: 'Enviando tarefas para Trello...',
-            detail: 'Espere...'
+            detail: 'Espere...',
+            title: 'Enviando...'
         });
           
         progressBar.on('completed', function() {
@@ -344,7 +381,38 @@ class Trello {
                 console.log("posting Todo")
                 progressBar.detail = "Enviando Todo"
 
-                await axios.put("https://api.trello.com/1/cards/"+Todo[i].Card_Id+"?idList="+LTodo+"&key="+this.key+"&token="+this.token)
+                let IdUsers = ""
+
+                for (let m in Multis) {
+
+                    if (Multis[m].id.replace("multiple_", "") == Todo[i].Card_Id) {
+
+                        for (let u in Users) {
+
+                            if (Multis[m].value.includes(Users[u].name)) {
+
+                                if (IdUsers == "") {
+
+                                    IdUsers += Users[u].id
+
+                                }
+                                else {
+
+                                    IdUsers += ","+Users[u].id
+
+                                }
+
+                            }
+
+                        }    
+
+                    }
+
+                }                
+
+                console.log(IdUsers)
+
+                await axios.put("https://api.trello.com/1/cards/"+Todo[i].Card_Id+"?idList="+LTodo+"&idMembers="+IdUsers+"&desc="+"&key="+this.key+"&token="+this.token)
                 .then(r => {
 
                     //alert("deu")
@@ -371,7 +439,36 @@ class Trello {
                 console.log("posting Doing")
                 progressBar.detail = "Enviando Doing"
 
-                await axios.put("https://api.trello.com/1/cards/"+Doing[i].Card_Id+"?idList="+LDoing+"&key="+this.key+"&token="+this.token)
+                let IdUsers = ""
+
+                for (let m in Multis) {
+
+                    if (Multis[m].id.replace("multiple_", "") == Doing[i].Card_Id) {
+
+                        for (let u in Users) {
+
+                            if (Multis[m].value.includes(Users[u].name)) {
+
+                                if (IdUsers == "") {
+
+                                    IdUsers += Users[u].id
+
+                                }
+                                else {
+
+                                    IdUsers += ","+Users[u].id
+
+                                }
+
+                            }
+
+                        }    
+
+                    }
+
+                }
+
+                await axios.put("https://api.trello.com/1/cards/"+Doing[i].Card_Id+"?idList="+LDoing+"&idMembers="+IdUsers+"&desc="+"&key="+this.key+"&token="+this.token)
                 .then(r => {
 
                     // alert("deu")
@@ -397,7 +494,36 @@ class Trello {
                 console.log("posting Blocked")
                 progressBar.detail = "Enviando Blocked"
 
-                await axios.put("https://api.trello.com/1/cards/"+Blocked[i].Card_Id+"?idList="+LBlocked+"&desc=Impedimento: "+Blocked[i].Impedimento+"&key="+this.key+"&token="+this.token)
+                let IdUsers = ""
+
+                for (let m in Multis) {
+
+                    if (Multis[m].id.replace("multiple_", "") == Blocked[i].Card_Id) {
+
+                        for (let u in Users) {
+
+                            if (Multis[m].value.includes(Users[u].name)) {
+
+                                if (IdUsers == "") {
+
+                                    IdUsers += Users[u].id
+
+                                }
+                                else {
+
+                                    IdUsers += ","+Users[u].id
+
+                                }
+
+                            }
+
+                        }    
+
+                    }
+
+                }
+
+                await axios.put("https://api.trello.com/1/cards/"+Blocked[i].Card_Id+"?idList="+LBlocked+"&desc=Impedimento: "+Blocked[i].Impedimento+"&idMembers="+IdUsers+"&key="+this.key+"&token="+this.token)
                 .then(r => {
 
                     // alert("deu")
@@ -423,7 +549,36 @@ class Trello {
                 console.log("posting Done")
                 progressBar.detail = "Enviando Done"
 
-                await axios.put("https://api.trello.com/1/cards/"+Done[i].Card_Id+"?idList="+LDone+"&key="+this.key+"&token="+this.token)
+                let IdUsers = ""
+
+                for (let m in Multis) {
+
+                    if (Multis[m].id.replace("multiple_", "") == Done[i].Card_Id) {
+
+                        for (let u in Users) {
+
+                            if (Multis[m].value.includes(Users[u].name)) {
+
+                                if (IdUsers == "") {
+
+                                    IdUsers += Users[u].id
+
+                                }
+                                else {
+
+                                    IdUsers += ","+Users[u].id
+
+                                }
+
+                            }
+
+                        }    
+
+                    }
+
+                }
+
+                await axios.put("https://api.trello.com/1/cards/"+Done[i].Card_Id+"?idList="+LDone+"&idMembers="+IdUsers+"&desc="+"&key="+this.key+"&token="+this.token)
                 .then(r => {
 
                     // alert("deu")
@@ -534,13 +689,75 @@ interface Multi {
 
 }
 
+interface dataSelect {
+
+    text: string | undefined,
+    value: string | string[] |undefined,
+    mandatory?: boolean
+
+}
+
+interface MultiChange {
+
+    "id": "6956323", 
+    "value": "value1", 
+    "text": "Value 1", 
+    "innerHTML": "Value 1", 
+    "selected": true, 
+    "disabled": false, 
+    "placeholder": false, 
+    "class": "", 
+    "style": "", "data": {}, 
+    "mandatory": false
+
+}
+
 let Multis: Multi[] = []
 
-const GeraMulti = (id: string) => {
+const GeraMulti = (id: string, data: dataSelect[]) => {
 
-    const multi = new SlimSelect({select: "."+id}) 
+    const multi = new SlimSelect({
+        
+        select: "."+id,
+        placeholder: "- Selecione ao menos 1 pessoa -",
+        data: data,
+        onChange: (e: MultiChange[]) => {PegaValorMulti(e, id)}
+    
+    }) 
 
-    Multis.push()
+    for (let d in data) {
+
+        if (data[d].mandatory) {
+
+            multi.set([data[d].value])
+
+        }
+
+    }
+
+    Multis.push({id: id, multi: multi, value: multi.selected()})
+
+}
+
+const PegaValorMulti = (e: MultiChange[], id: string) => {
+
+    let v: string[] = []
+
+    for (let vl in e) {
+
+        v.push(e[vl].value)
+
+    }
+
+    for (let m in Multis) {
+
+        if (Multis[m].id == id) {
+
+            Multis[m].value = v
+
+        }
+
+    }
 
 }
 
@@ -558,34 +775,22 @@ const AddNode = (tarefa: string, id: string, impedida: boolean, impedimento?: st
 
                     <div style="padding: 10px; margin-top: 10px; margin-bottom: 10px;" id="`+id+`">
 
-                        <textarea id="text_tarefa_`+id+`" style="background-color: #2b3f4e; text-align: center;" placeholder="Expecifique a tarefa..." required>`+tarefa+`</textarea>
+                        <textarea id="text_tarefa_`+id+`" name="text_tarefa_`+id+`" style="background-color: #2b3f4e; text-align: center;" placeholder="Expecifique a tarefa..." required>`+tarefa+`</textarea>
 
                         <div class="select-wrapper" id="select_cinza" style="margin-top: 10px;">
 
-                            <select id="select_status_`+id+`" style="color: white; background-color: #2b3f4e;">
+                            <select id="select_status_`+id+`" name="select_status_`+id+`" style="color: white; background-color: #2b3f4e;">
 
-                                <option>Vou fazer hoje</option>
-                                <option>Não Vou fazer hoje</option>
-                                <option>Concluido</option>
-                                <option selected>Impedido</option>
+                                <option value="Vou fazer hoje">Vou fazer hoje</option>
+                                <option value="Não Vou fazer hoje">Não Vou fazer hoje</option>
+                                <option value="Concluido">Concluido</option>
+                                <option value="Impedido" selected>Impedido</option>
 
                             </select>
 
-                            <textarea id="text_impedimento_`+id+`" style="background-color: #2b3f4e; text-align: center; margin-top: 10px;" placeholder="Expecifique o impedimento..." required>`+impedimento+`</textarea>
+                            <textarea id="text_impedimento_`+id+`" name="text_impedimento_`+id+`" style="background-color: #2b3f4e; text-align: center; margin-top: 10px;" placeholder="Expecifique o impedimento..." required>`+impedimento+`</textarea>
 
-                            <select id="multiple_`+id+`" class="multiple_`+id+`" multiple>
-                                <option value="value 1">Value 1</option>
-                                <option value="value 2">Value 2</option>
-                                <option value="value 3">Value 3</option>
-                            </select>
-
-                            <script>
-                            
-                                new SlimSelect({
-                                    select: '#multiple'
-                                })
-                              
-                            </script>
+                            <select id="multiple_`+id+`" class="multiple_`+id+`" name="multiple_`+id+`" multiple></select>
 
                         </div>
 
@@ -606,28 +811,24 @@ const AddNode = (tarefa: string, id: string, impedida: boolean, impedimento?: st
     
                 <div style="padding: 10px; margin-top: 10px; margin-bottom: 10px;" id="`+id+`">
 
-                    <textarea id="text_tarefa_`+id+`" style="background-color: #2b3f4e; text-align: center;" placeholder="Expecifique a tarefa..." required>`+tarefa+`</textarea>
+                    <textarea id="text_tarefa_`+id+`" name="text_tarefa_`+id+`" style="background-color: #2b3f4e; text-align: center;" placeholder="Expecifique a tarefa..." required>`+tarefa+`</textarea>
 
                     <div class="select-wrapper" id="select_cinza" style="margin-top: 10px;">
 
-                        <select id="select_status_`+id+`" style="color: white; background-color: #2b3f4e;">
+                        <select id="select_status_`+id+`" name="select_status_`+id+`" style="color: white; background-color: #2b3f4e;">
 
-                            <option selected>Vou fazer hoje</option>
-                            <option>Não Vou fazer hoje</option>
-                            <option>Concluido</option>
-                            <option>Impedido</option>
+                            <option value="Vou fazer hoje" selected>Vou fazer hoje</option>
+                            <option value="Não Vou fazer hoje">Não Vou fazer hoje</option>
+                            <option value="Concluido">Concluido</option>
+                            <option value="Impedido">Impedido</option>
 
                         </select>
 
                     </div>
 
-                    <textarea id="text_impedimento_`+id+`" style="background-color: #2b3f4e; text-align: center; margin-top: 10px; display: none" placeholder="Expecifique o impedimento..."></textarea>
+                    <textarea id="text_impedimento_`+id+`" name="text_impedimento_`+id+`" style="background-color: #2b3f4e; text-align: center; margin-top: 10px; display: none" placeholder="Expecifique o impedimento..."></textarea>
 
-                    <select id="multiple_`+id+`" class="multiple_`+id+`" multiple>
-                        <option value="value 1">Value 1</option>
-                        <option value="value 2">Value 2</option>
-                        <option value="value 3">Value 3</option>
-                    </select>
+                    <select id="multiple_`+id+`" class="multiple_`+id+`" name="multiple_`+id+`" multiple></select>
 
                 </div>
 
@@ -639,7 +840,35 @@ const AddNode = (tarefa: string, id: string, impedida: boolean, impedimento?: st
 
     div_tarefas2?.insertAdjacentHTML("beforeend", HTML)
 
-    GeraMulti("multiple_"+id)
+    let data: dataSelect[] = [];
+
+    data.push({text: select_user?.value, value: select_user?.value, mandatory: true})
+
+    for (let o in select_user?.options) {
+
+        if (o == "0") {
+
+            continue
+
+        }
+        else {
+
+            if (select_user?.options[parseInt(o)] == undefined) {
+
+                break
+
+            }
+            else if (select_user?.options[parseInt(o)].value != select_user.value) {
+
+                data.push({text: select_user?.options[parseInt(o)].value, value: select_user?.options[parseInt(o)].value})
+
+            }
+
+        }
+
+    }
+
+    GeraMulti("multiple_"+id, data)
 
     const select: HTMLSelectElement | null | undefined = div_tarefas2?.querySelector("select#select_status_"+id)
     const text_impedimento: HTMLTextAreaElement | null | undefined = div_tarefas2?.querySelector("textarea#text_impedimento_"+id)
@@ -649,13 +878,13 @@ const AddNode = (tarefa: string, id: string, impedida: boolean, impedimento?: st
         if (select.value == "Impedido") {
 
             text_impedimento?.setAttribute("style", "background-color: #2b3f4e; text-align: center; margin-top: 10px; display: block")
-            text_impedimento?.setAttribute("required", "true")
+            text_impedimento?.setAttribute("required", "")
 
         }
         else {
 
             text_impedimento?.setAttribute("style", "background-color: #2b3f4e; text-align: center; margin-top: 10px; display: none")
-            text_impedimento?.setAttribute("required", "false")
+            text_impedimento?.removeAttribute("required")
 
         }
 
@@ -729,6 +958,8 @@ select_user?.addEventListener('change', async (e) => {
     const User = select_user.value
     const Team = select_team?.value
 
+    Multis = []
+
     if (div_tarefas2 != undefined) {
 
         for (let i = div_tarefas2?.children.length || 0; i >= 1; i--) {
@@ -775,8 +1006,6 @@ select_user?.addEventListener('change', async (e) => {
             }
 
         }
-
-        console.log(b)
 
         if (b) {
 
