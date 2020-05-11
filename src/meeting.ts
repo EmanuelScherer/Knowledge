@@ -10,7 +10,7 @@ const con = electron.remote.getGlobal('console')
 
 const ProgressBar = electron.remote.getGlobal('ProgressBar');
 
-let JaEscolido: String[] = []
+let NEscolido: String[] = []
 
 interface OConfig {
 
@@ -598,6 +598,13 @@ class Trello {
         }
 
         progressBar.setCompleted();
+
+        if (select_user != undefined && NEscolido.includes(select_user.value)) {
+
+            NEscolido.splice(NEscolido.indexOf(select_user.value), 1)
+
+        }
+
         return true
 
     }
@@ -892,6 +899,122 @@ const AddNode = (tarefa: string, id: string, impedida: boolean, impedimento?: st
 
 }
 
+const change_user = async () => {
+
+    const User = select_user?.value
+    const Team = select_team?.value
+
+    Multis = []
+
+    if (div_tarefas2 != undefined) {
+
+        for (let i = div_tarefas2?.children.length || 0; i >= 1; i--) {
+
+            div_tarefas2?.removeChild(div_tarefas2.children[i-1])
+
+        }
+
+    }
+
+    if (select_user?.value != "") {
+
+        let b = false
+
+        let ops: String[] = []
+
+        if (select_user?.value == "Random") {
+
+            for (let o in select_user?.options) {
+
+                if (select_user?.options[parseInt(o)] != undefined && parseInt(o) == 0) {
+
+                    ops.push(select_user?.options[parseInt(o)].value)
+
+                }
+
+            }
+
+            let sel = ops[Math.floor(Math.random() * NEscolido.length)]
+
+            if (sel == select_user.value) {
+
+                if (ops.indexOf(sel) == ops.length-1) {
+
+                    sel = ops[ops.indexOf(sel)-1]
+
+                }
+                else {
+
+                    sel = ops[ops.indexOf(sel)+1]
+
+                }
+
+            }
+
+            select_user.value = sel.toString()
+
+            console.log("NEscolido: ", NEscolido)
+
+            change_user()
+
+        }
+        else {
+
+            console.log("user mudado")
+
+            const tr = new Trello("c8055ea81e83e2f2aee0a17139667194", "3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
+
+            console.log(Team)
+
+            for (let cf in configs) {
+
+                for (let t in configs[cf].teams) {
+
+                    if (configs[cf].teams[t].name == Team) {
+
+                        console.log("a")
+
+                        for (let u in configs[cf].teams[t].users) {
+
+                            if (configs[cf].teams[t].users[u].name == User) {
+
+                                console.log("pega trello")
+
+                                b = await tr.GetTrello(configs[cf].teams[t].users[u].id, User, Team)
+
+                                break
+
+                            }
+
+                        }
+
+                    }
+
+                }
+            }
+
+        }
+
+        if (b) {
+
+            div_tarefas?.setAttribute("style", "display: block")
+        
+        }
+        else {
+
+            div_tarefas?.setAttribute("style", "display: none")
+
+        }
+
+    }
+    else {
+
+        div_tarefas?.setAttribute("style", "display: none")
+
+    }
+
+}
+
 bt_add?.forEach(b => {
 
     b.addEventListener('click', (e) => {
@@ -953,79 +1076,7 @@ bt_add?.forEach(b => {
 
 })
 
-select_user?.addEventListener('change', async (e) => {
-
-    const User = select_user.value
-    const Team = select_team?.value
-
-    Multis = []
-
-    if (div_tarefas2 != undefined) {
-
-        for (let i = div_tarefas2?.children.length || 0; i >= 1; i--) {
-
-            div_tarefas2?.removeChild(div_tarefas2.children[i-1])
-
-        }
-
-    }
-
-    if (select_user.value != "") {
-
-        let b = false
-
-        console.log("user mudado")
-
-        const tr = new Trello("c8055ea81e83e2f2aee0a17139667194", "3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
-
-        console.log(Team)
-
-        for (let cf in configs) {
-
-            for (let t in configs[cf].teams) {
-
-                if (configs[cf].teams[t].name == Team) {
-
-                    console.log("a")
-
-                    for (let u in configs[cf].teams[t].users) {
-
-                        if (configs[cf].teams[t].users[u].name == User) {
-
-                            console.log("pega trello")
-
-                            b = await tr.GetTrello(configs[cf].teams[t].users[u].id, User, Team)
-                            break
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-        }
-
-        if (b) {
-
-            div_tarefas?.setAttribute("style", "display: block")
-        
-        }
-        else {
-
-            div_tarefas?.setAttribute("style", "display: none")
-
-        }
-
-    }
-    else {
-
-        div_tarefas?.setAttribute("style", "display: none")
-
-    }
-
-})
+select_user?.addEventListener('change', change_user)
 
 select_team?.addEventListener('change', (e) => {
 
@@ -1052,6 +1103,8 @@ select_team?.addEventListener('change', (e) => {
 
                         AddToSelect("select_user", configs[config].teams[team].users[user].name)
 
+                        NEscolido.push(configs[config].teams[team].users[user].name)
+
                     }
 
                     b = true
@@ -1077,6 +1130,8 @@ select_team?.addEventListener('change', (e) => {
         div_2?.setAttribute("style", "display: none;")
 
     }
+
+    AddToSelect("select_user", "Random")
 
 })
 
