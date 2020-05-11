@@ -11,6 +11,7 @@ const con = electron.remote.getGlobal('console')
 const ProgressBar = electron.remote.getGlobal('ProgressBar');
 
 let NEscolido: String[] = []
+let UltimoEscolido: string = ""
 
 interface OConfig {
 
@@ -60,6 +61,12 @@ interface OConfig {
                         "name": "Blocked",
                         "id": ""
 
+                    },
+                    {
+
+                        "name": "Deliveries",
+                        "id": ""
+
                     }
 
                 ]
@@ -99,7 +106,11 @@ const select_user: HTMLSelectElement | null = document.querySelector("#select_us
 const div_tarefas: HTMLDivElement | null = document.querySelector("div#tarefas")
 const div_tarefas2: HTMLDivElement | null = document.querySelector("div#d_tf")
 
+const div_entregas: HTMLDivElement | null = document.querySelector("div#entregas")
+const div_entregas2: HTMLDivElement | null = document.querySelector("div#d_en")
+
 const bt_add: NodeListOf<HTMLButtonElement> | null = document.querySelectorAll("button#bt_add")
+const bt_add_entregas: NodeListOf<HTMLButtonElement> | null = document.querySelectorAll("button#bt_en")
 
 interface ObjTrello {
 
@@ -108,6 +119,17 @@ interface ObjTrello {
     Descricao: string
 
     Impedida: boolean
+    Impedimento: string
+
+}
+
+interface ObjDeliveries {
+
+    Card_Id: string
+
+    Descricao: string
+
+    Status: string
     Impedimento: string
 
 }
@@ -131,7 +153,7 @@ class Trello {
 
     }
 
-    GetTrello = async (id: string, name: string, team: string, ) => {
+    GetTrello = async (id: string, name: string, team: string) => {
 
         let b = true
 
@@ -267,6 +289,21 @@ class Trello {
                                             AddNode(res[c].name, res[c].id, true, res[c].desc.replace("Impedimento:", ""));
                                             break;
 
+                                        case "Deliveries":
+
+                                            if (res[c].desc.includes("Impedimento:")) {
+
+                                                AddNodeEntregas(res[c].name, res[c].id, true, res[c].desc.replace("Impedimento:", ""))
+
+                                            }
+                                            else {
+
+                                                AddNodeEntregas(res[c].name, res[c].id, false)
+
+                                            }
+
+                                            break;
+
                                     }
 
                                 }
@@ -304,7 +341,7 @@ class Trello {
 
     }
 
-    PostTrello = async (Todo: ObjTrello[], Doing: ObjTrello[], Blocked: ObjTrello[], Done: ObjTrello[]) => {
+    PostTrello = async (Todo: ObjTrello[], Doing: ObjTrello[], Blocked: ObjTrello[], Done: ObjTrello[], Deliveries: ObjDeliveries[]) => {
 
         console.log("post trello")
 
@@ -312,6 +349,7 @@ class Trello {
         let LDoing = ""
         let LDone = ""
         let LBlocked = ""
+        let LDeliveries = ""
 
         let Users: UsersConfig[] = []
 
@@ -346,6 +384,12 @@ class Trello {
                         if (configs[cf].teams[t].trello.lists[l].name == "Done") {
 
                             LDone = configs[cf].teams[t].trello.lists[l].id
+
+                        }
+
+                        if (configs[cf].teams[t].trello.lists[l].name == "Deliveries") {
+
+                            LDeliveries = configs[cf].teams[t].trello.lists[l].id
 
                         }
 
@@ -596,6 +640,8 @@ class Trello {
             }
 
         }
+
+        
 
         progressBar.setCompleted();
 
@@ -853,7 +899,7 @@ const AddNode = (tarefa: string, id: string, impedida: boolean, impedimento?: st
 
     for (let o in select_user?.options) {
 
-        if (o == "0") {
+        if (o == "0" || o == "1") {
 
             continue
 
@@ -899,6 +945,137 @@ const AddNode = (tarefa: string, id: string, impedida: boolean, impedimento?: st
 
 }
 
+const AddNodeEntregas = (entrega: string, id: string, impedida: boolean, impedimento?: string) => {
+
+    let HTML = ""
+
+    if (impedida) {
+
+        HTML = `
+    
+            <div style="background-color: #22323f;" id="tf_`+id+`">
+
+                <div style="background-color: #22323f; id="tf_`+id+`">
+
+                    <div style="padding: 10px; margin-top: 10px; margin-bottom: 10px;" id="`+id+`">
+
+                        <textarea id="text_entrega_`+id+`" name="text_entrega_`+id+`" style="background-color: #2b3f4e; text-align: center;" placeholder="Expecifique a entrega..." required>`+entrega+`</textarea>
+
+                        <div class="select-wrapper" id="select_cinza" style="margin-top: 10px;">
+
+                            <select id="select_status_`+id+`" name="select_status_`+id+`" style="color: white; background-color: #2b3f4e;">
+
+                                <option selected>Fazendo</option>
+                                <option>Não entrege</option>
+                                <option>Concluido</option>
+                                <option>Impedido</option>
+
+                            </select>
+
+                            <textarea id="text_impedimento_`+id+`" name="text_impedimento_`+id+`" style="background-color: #2b3f4e; text-align: center; margin-top: 10px;" placeholder="Expecifique o impedimento..." required>`+impedimento+`</textarea>
+
+                            <select id="multiple_`+id+`" class="multiple_`+id+`" name="multiple_`+id+`" multiple></select>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        `
+
+    }
+    else {
+
+        HTML = `
+
+            <div style="background-color: #22323f;" id="tf_`+id+`">
+    
+                <div style="padding: 10px; margin-top: 10px; margin-bottom: 10px;" id="`+id+`">
+
+                    <textarea id="text_entrega_`+id+`" name="text_entrega_`+id+`" style="background-color: #2b3f4e; text-align: center;" placeholder="Expecifique a entrega..." required>`+entrega+`</textarea>
+
+                    <div class="select-wrapper" id="select_cinza" style="margin-top: 10px;">
+
+                        <select id="select_status_`+id+`" name="select_status_`+id+`" style="color: white; background-color: #2b3f4e;">
+
+                            <option selected>Fazendo</option>
+                            <option>Não entrege</option>
+                            <option>Concluido</option>
+                            <option>Impedido</option>
+
+                        </select>
+
+                    </div>
+
+                    <textarea id="text_impedimento_`+id+`" name="text_impedimento_`+id+`" style="background-color: #2b3f4e; text-align: center; margin-top: 10px; display: none" placeholder="Expecifique o impedimento..."></textarea>
+
+                    <select id="multiple_`+id+`" class="multiple_`+id+`" name="multiple_`+id+`" multiple></select>
+
+                </div>
+
+            </div>
+
+        `
+
+    }
+
+    div_entregas2?.insertAdjacentHTML("beforeend", HTML)
+
+    let data: dataSelect[] = [];
+
+    data.push({text: select_user?.value, value: select_user?.value, mandatory: true})
+
+    for (let o in select_user?.options) {
+
+        if (o == "0" || o == "1") {
+
+            continue
+
+        }
+        else {
+
+            if (select_user?.options[parseInt(o)] == undefined) {
+
+                break
+
+            }
+            else if (select_user?.options[parseInt(o)].value != select_user.value) {
+
+                data.push({text: select_user?.options[parseInt(o)].value, value: select_user?.options[parseInt(o)].value})
+
+            }
+
+        }
+
+    }
+
+    GeraMulti("multiple_"+id, data)
+
+    const select: HTMLSelectElement | null | undefined = div_entregas2?.querySelector("select#select_status_"+id)
+    const text_impedimento: HTMLTextAreaElement | null | undefined = div_entregas2?.querySelector("textarea#text_impedimento_"+id)
+
+    select?.addEventListener("change", (e) => {
+
+        if (select.value == "Impedido") {
+
+            text_impedimento?.setAttribute("style", "background-color: #2b3f4e; text-align: center; margin-top: 10px; display: block")
+            text_impedimento?.setAttribute("required", "")
+
+        }
+        else {
+
+            text_impedimento?.setAttribute("style", "background-color: #2b3f4e; text-align: center; margin-top: 10px; display: none")
+            text_impedimento?.removeAttribute("required")
+
+        }
+
+    })
+
+}
+
 const change_user = async () => {
 
     const User = select_user?.value
@@ -920,13 +1097,13 @@ const change_user = async () => {
 
         let b = false
 
-        let ops: String[] = []
+        let ops: string[] = []
 
         if (select_user?.value == "Random") {
 
             for (let o in select_user?.options) {
 
-                if (select_user?.options[parseInt(o)] != undefined && parseInt(o) == 0) {
+                if (select_user?.options[parseInt(o)] != undefined && parseInt(o) > 1) {
 
                     ops.push(select_user?.options[parseInt(o)].value)
 
@@ -936,7 +1113,7 @@ const change_user = async () => {
 
             let sel = ops[Math.floor(Math.random() * NEscolido.length)]
 
-            if (sel == select_user.value) {
+            if (sel == UltimoEscolido) {
 
                 if (ops.indexOf(sel) == ops.length-1) {
 
@@ -951,7 +1128,9 @@ const change_user = async () => {
 
             }
 
-            select_user.value = sel.toString()
+            console.log(sel)
+
+            select_user.value = sel
 
             console.log("NEscolido: ", NEscolido)
 
@@ -998,11 +1177,13 @@ const change_user = async () => {
         if (b) {
 
             div_tarefas?.setAttribute("style", "display: block")
+            div_entregas?.setAttribute("style", "display: block")
         
         }
         else {
 
             div_tarefas?.setAttribute("style", "display: none")
+            div_entregas?.setAttribute("style", "display: block")
 
         }
 
@@ -1035,8 +1216,7 @@ bt_add?.forEach(b => {
     
                         <select id="select_status_`+id+`" style="color: white; background-color: #2b3f4e;">
     
-                            <option selected>Vou fazer hoje</option>
-                            <option>Não Vou fazer hoje</option>
+                            <option selected>Fazendo</option>
                             <option>Concluido</option>
                             <option>Impedido</option>
     
@@ -1044,6 +1224,8 @@ bt_add?.forEach(b => {
     
                         <textarea id="text_impedimento_`+id+`" style="background-color: #2b3f4e; text-align: center; margin-top: 10px; display: none" placeholder="Expecifique o impedimento..."></textarea>
     
+                        <select id="multiple_`+id+`" class="multiple_`+id+`" name="multiple_`+id+`" multiple></select>
+
                     </div>
     
                 </div>
@@ -1054,8 +1236,131 @@ bt_add?.forEach(b => {
     
         div_tarefas2?.insertAdjacentHTML("beforeend", HTML)
     
+        let data: dataSelect[] = [];
+
+        data.push({text: select_user?.value, value: select_user?.value, mandatory: true})
+    
+        for (let o in select_user?.options) {
+    
+            if (o == "0" || o == "1") {
+    
+                continue
+    
+            }
+            else {
+    
+                if (select_user?.options[parseInt(o)] == undefined) {
+    
+                    break
+    
+                }
+                else if (select_user?.options[parseInt(o)].value != select_user.value) {
+    
+                    data.push({text: select_user?.options[parseInt(o)].value, value: select_user?.options[parseInt(o)].value})
+    
+                }
+    
+            }
+    
+        }
+
+        GeraMulti("multiple_"+id, data)
+
         const select: HTMLSelectElement | null | undefined = div_tarefas2?.querySelector("select#select_status_"+id)
         const text_impedimento: HTMLTextAreaElement | null | undefined = div_tarefas2?.querySelector("textarea#text_impedimento_"+id)
+    
+        select?.addEventListener("change", (e) => {
+    
+            if (select.value == "Impedido") {
+    
+                text_impedimento?.setAttribute("style", "background-color: #2b3f4e; text-align: center; margin-top: 10px; display: block")
+    
+            }
+            else {
+    
+                text_impedimento?.setAttribute("style", "background-color: #2b3f4e; text-align: center; margin-top: 10px; display: none")
+    
+            }
+    
+        })
+    
+    })
+
+})
+
+bt_add_entregas?.forEach(b => {
+
+    b.addEventListener('click', (e) => {
+
+        div_entregas?.setAttribute("style", "display: block")
+    
+        const id = uuidv4() 
+    
+        let HTML = `
+        
+            <div style="background-color: #22323f;" id="tf_`+id+`">
+    
+                <div style="padding: 10px; margin-top: 10px; margin-bottom: 10px;" id="`+id+`">
+    
+                    <textarea id="text_entrega_`+id+`" style="background-color: #2b3f4e; text-align: center;" placeholder="Expecifique a entrega..." required></textarea>
+    
+                    <div class="select-wrapper" id="select_cinza" style="margin-top: 10px;">
+    
+                        <select id="select_status_`+id+`" style="color: white; background-color: #2b3f4e;">
+    
+                            <option selected>Fazendo</option>
+                            <option>Não entrege</option>
+                            <option>Concluido</option>
+                            <option>Impedido</option>
+    
+                        </select>
+    
+                        <textarea id="text_impedimento_`+id+`" style="background-color: #2b3f4e; text-align: center; margin-top: 10px; display: none" placeholder="Expecifique o impedimento..."></textarea>
+    
+                        <select id="multiple_`+id+`" class="multiple_`+id+`" name="multiple_`+id+`" multiple></select>
+
+                    </div>
+    
+                </div>
+    
+            </div>
+    
+        `
+    
+        div_entregas2?.insertAdjacentHTML("beforeend", HTML)
+    
+        let data: dataSelect[] = [];
+
+        data.push({text: select_user?.value, value: select_user?.value, mandatory: true})
+    
+        for (let o in select_user?.options) {
+    
+            if (o == "0" || o == "1") {
+    
+                continue
+    
+            }
+            else {
+    
+                if (select_user?.options[parseInt(o)] == undefined) {
+    
+                    break
+    
+                }
+                else if (select_user?.options[parseInt(o)].value != select_user.value) {
+    
+                    data.push({text: select_user?.options[parseInt(o)].value, value: select_user?.options[parseInt(o)].value})
+    
+                }
+    
+            }
+    
+        }
+
+        GeraMulti("multiple_"+id, data)
+
+        const select: HTMLSelectElement | null | undefined = div_entregas2?.querySelector("select#select_status_"+id)
+        const text_impedimento: HTMLTextAreaElement | null | undefined = div_entregas2?.querySelector("textarea#text_impedimento_"+id)
     
         select?.addEventListener("change", (e) => {
     
@@ -1087,11 +1392,16 @@ select_team?.addEventListener('change', (e) => {
     if (select_team.value != "") {
 
         const op = document.createElement("option")
+        const op2 = document.createElement("option")
 
         op.value = ""
         op.text = "- Selecione uma pessoa -"
 
+        op2.value = "Random"
+        op2.text = "- Selecionar random -"
+
         select_user?.append(op)
+        select_user?.append(op2)
 
         for (let config in configs) {
 
@@ -1130,8 +1440,6 @@ select_team?.addEventListener('change', (e) => {
         div_2?.setAttribute("style", "display: none;")
 
     }
-
-    AddToSelect("select_user", "Random")
 
 })
 
