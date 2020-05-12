@@ -3,6 +3,7 @@ import * as electron from 'electron';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import * as moment from 'moment';
 
 const SlimSelect = require('slim-select')
 
@@ -129,7 +130,9 @@ interface ObjDeliveries {
 
     Descricao: string
 
-    Status: string
+    Dia: string
+
+    Status: "fazendo" | "impedida" | "concluido" | "nao entregada"
     Impedimento: string
 
 }
@@ -641,7 +644,121 @@ class Trello {
 
         }
 
-        
+        if (Deliveries[0] != undefined) {
+
+            for (let i in Deliveries) {
+
+                console.log("posting Deliveries")
+                progressBar.detail = "Enviando Deliveries"
+
+                let IdUsers = ""
+
+                for (let m in Multis) {
+
+                    if (Multis[m].id.replace("multiple_", "") == Deliveries[i].Card_Id) {
+
+                        for (let u in Users) {
+
+                            if (Multis[m].value.includes(Users[u].name)) {
+
+                                if (IdUsers == "") {
+
+                                    IdUsers += Users[u].id
+
+                                }
+                                else {
+
+                                    IdUsers += ","+Users[u].id
+
+                                }
+
+                            }
+
+                        }    
+
+                    }
+
+                }
+
+                if (Deliveries[i].Status == "fazendo") {
+
+                    await axios.put("https://api.trello.com/1/cards/"+Deliveries[i].Card_Id+"?idList="+LDeliveries+"&due="+Deliveries[i].Dia+"&dueComplete=true"+"&idMembers="+IdUsers+"&key="+this.key+"&token="+this.token)
+                    .then(r => {
+
+                        // alert("deu")
+
+                    })
+                    .catch(e => {
+
+                        progressBar.detail = "Um erro ocorreu: "+e
+                        progressBar.close()
+
+                        return false
+
+                    })
+
+                }
+
+                if (Deliveries[i].Status == "impedida") {
+
+                    await axios.put("https://api.trello.com/1/cards/"+Deliveries[i].Card_Id+"?idList="+LDeliveries+"&due="+Deliveries[i].Dia+"&dueComplete=true"+"&idMembers="+IdUsers+"&desc= Impedimento: "+Deliveries[i].Impedimento+"&key="+this.key+"&token="+this.token)
+                    .then(r => {
+
+                        // alert("deu")
+
+                    })
+                    .catch(e => {
+
+                        progressBar.detail = "Um erro ocorreu: "+e
+                        progressBar.close()
+
+                        return false
+
+                    })
+
+                }
+
+                if (Deliveries[i].Status == "nao entregada") {
+
+                    await axios.put("https://api.trello.com/1/cards/"+Deliveries[i].Card_Id+"?idList="+LDeliveries+"&due="+Deliveries[i].Dia+"&dueComplete=false"+"&idMembers="+IdUsers+"&key="+this.key+"&token="+this.token)
+                    .then(r => {
+
+                        // alert("deu")
+
+                    })
+                    .catch(e => {
+
+                        progressBar.detail = "Um erro ocorreu: "+e
+                        progressBar.close()
+
+                        return false
+
+                    })
+
+                }
+
+                if (Deliveries[i].Status == "concluido") {
+
+                    await axios.put("https://api.trello.com/1/cards/"+Deliveries[i].Card_Id+"?idList="+LDeliveries+"&due="+Deliveries[i].Dia+"&dueComplete=true"+"&idMembers="+IdUsers+"&key="+this.key+"&token="+this.token)
+                    .then(r => {
+
+                        // alert("deu")
+
+                    })
+                    .catch(e => {
+
+                        progressBar.detail = "Um erro ocorreu: "+e
+                        progressBar.close()
+
+                        return false
+
+                    })
+
+                }
+
+            }
+
+        }
 
         progressBar.setCompleted();
 
@@ -953,9 +1070,9 @@ const AddNodeEntregas = (entrega: string, id: string, impedida: boolean, impedim
 
         HTML = `
     
-            <div style="background-color: #22323f;" id="tf_`+id+`">
+            <div style="background-color: #22323f;" id="en_`+id+`">
 
-                <div style="background-color: #22323f; id="tf_`+id+`">
+                <div style="background-color: #22323f; id="en_`+id+`">
 
                     <div style="padding: 10px; margin-top: 10px; margin-bottom: 10px;" id="`+id+`">
 
@@ -972,11 +1089,26 @@ const AddNodeEntregas = (entrega: string, id: string, impedida: boolean, impedim
 
                             </select>
 
-                            <textarea id="text_impedimento_`+id+`" name="text_impedimento_`+id+`" style="background-color: #2b3f4e; text-align: center; margin-top: 10px;" placeholder="Expecifique o impedimento..." required>`+impedimento+`</textarea>
+                        <div>
 
-                            <select id="multiple_`+id+`" class="multiple_`+id+`" name="multiple_`+id+`" multiple></select>
+                        <div class="select-wrapper" id="select_cinza" style="margin-top: 10px;">
+
+                            <select id="select_data_`+id+`" name="select_data_`+id+`" style="color: white; background-color: #2b3f4e;">
+
+                                <option>Segunda</option>
+                                <option>Terça</option>
+                                <option>Quarta</option>
+                                <option>Quinta</option>
+                                <option>Sexta</option>
+                                <option>Proxima Semana</option>
+
+                            </select>
 
                         </div>
+
+                        <textarea id="text_impedimento_`+id+`" name="text_impedimento_`+id+`" style="background-color: #2b3f4e; text-align: center; margin-top: 10px;" placeholder="Expecifique o impedimento..." required>`+impedimento+`</textarea>
+
+                        <select id="multiple_`+id+`" class="multiple_`+id+`" name="multiple_`+id+`" multiple></select>
 
                     </div>
 
@@ -991,9 +1123,9 @@ const AddNodeEntregas = (entrega: string, id: string, impedida: boolean, impedim
 
         HTML = `
 
-            <div style="background-color: #22323f;" id="tf_`+id+`">
+            <div style="background-color: #22323f;" id="en_`+id+`">
     
-                <div style="padding: 10px; margin-top: 10px; margin-bottom: 10px;" id="`+id+`">
+                <div style="padding: 10px; margin-top: 10px; margin-bottom: 10px;" id="en_`+id+`">
 
                     <textarea id="text_entrega_`+id+`" name="text_entrega_`+id+`" style="background-color: #2b3f4e; text-align: center;" placeholder="Expecifique a entrega..." required>`+entrega+`</textarea>
 
@@ -1005,6 +1137,21 @@ const AddNodeEntregas = (entrega: string, id: string, impedida: boolean, impedim
                             <option>Não entrege</option>
                             <option>Concluido</option>
                             <option>Impedido</option>
+
+                        </select>
+
+                    <div>
+
+                    <div class="select-wrapper" id="select_cinza" style="margin-top: 10px;">
+
+                        <select id="select_data_`+id+`" name="select_data_`+id+`" style="color: white; background-color: #2b3f4e;">
+
+                            <option>Segunda</option>
+                            <option>Terça</option>
+                            <option>Quarta</option>
+                            <option>Quinta</option>
+                            <option>Sexta</option>
+                            <option>Proxima Semana</option>
 
                         </select>
 
@@ -1300,7 +1447,7 @@ bt_add_entregas?.forEach(b => {
         
             <div style="background-color: #22323f;" id="tf_`+id+`">
     
-                <div style="padding: 10px; margin-top: 10px; margin-bottom: 10px;" id="`+id+`">
+                <div style="padding: 10px; margin-top: 10px; margin-bottom: 10px;" id="en_`+id+`">
     
                     <textarea id="text_entrega_`+id+`" style="background-color: #2b3f4e; text-align: center;" placeholder="Expecifique a entrega..." required></textarea>
     
@@ -1314,12 +1461,27 @@ bt_add_entregas?.forEach(b => {
                             <option>Impedido</option>
     
                         </select>
-    
-                        <textarea id="text_impedimento_`+id+`" style="background-color: #2b3f4e; text-align: center; margin-top: 10px; display: none" placeholder="Expecifique o impedimento..."></textarea>
-    
-                        <select id="multiple_`+id+`" class="multiple_`+id+`" name="multiple_`+id+`" multiple></select>
 
                     </div>
+
+                    <div class="select-wrapper" id="select_cinza" style="margin-top: 10px;">
+
+                        <select id="select_data_`+id+`" name="select_data_`+id+`" style="color: white; background-color: #2b3f4e;">
+
+                            <option>Segunda</option>
+                            <option>Terça</option>
+                            <option>Quarta</option>
+                            <option>Quinta</option>
+                            <option>Sexta</option>
+                            <option>Proxima Semana</option>
+
+                        </select>
+
+                    </div>
+    
+                    <textarea id="text_impedimento_`+id+`" style="background-color: #2b3f4e; text-align: center; margin-top: 10px; display: none" placeholder="Expecifique o impedimento..."></textarea>
+    
+                    <select id="multiple_`+id+`" class="multiple_`+id+`" name="multiple_`+id+`" multiple></select>
     
                 </div>
     
@@ -1450,11 +1612,13 @@ from_team?.addEventListener('submit', async (e) => {
     const tr = new Trello("c8055ea81e83e2f2aee0a17139667194", "3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
 
     const div_tf: HTMLDivElement | null = document.querySelector("div#d_tf")
+    const div_en: HTMLDivElement | null = document.querySelector("div#d_en")
 
     let Todo: ObjTrello[] = []
     let Doing: ObjTrello[] = []
     let Done: ObjTrello[] = []
     let Bloked: ObjTrello[] = []
+    let Deliveries: ObjDeliveries[] = []
 
     if (div_tf?.children.length != undefined) {
 
@@ -1502,7 +1666,248 @@ from_team?.addEventListener('submit', async (e) => {
 
         }
 
-        await tr.PostTrello(Todo, Doing, Bloked, Done)
+        if (div_en?.children.length != undefined) {
+
+            for (let i = 0; i < div_en?.children.length; i++) {
+
+                const id = div_en?.children[i].id.replace("en_", "")
+
+                const text: HTMLTextAreaElement | null = div_en?.children[i].querySelector("textarea#text_entrega_"+id)
+                const select: HTMLSelectElement | null = div_en?.children[i].querySelector("select#select_status_"+id)
+                const data: HTMLSelectElement | null = div_en?.children[i].querySelector("select#select_data_"+id)
+                const imp: HTMLSelectElement | null = div_en?.children[i].querySelector("textarea#text_impedimento_"+id)
+
+                const desc = text?.value
+
+                switch (select?.value) {
+
+                    case "Fazendo": {
+
+                        switch (data?.value) {
+
+                            case "Segunda": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "fazendo", Dia: moment().day(1).format('LLLL'), Impedimento: ""})
+
+                                break
+
+                            }
+
+                            case "Terça": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "fazendo", Dia: moment().day(2).format('LLLL'), Impedimento: ""})
+
+                                break
+
+                            }
+                            case "Quarta": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "fazendo", Dia: moment().day(3).format('LLLL'), Impedimento: ""})
+
+                                break
+
+                            }
+                            case "Quinta": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "fazendo", Dia: moment().day(4).format('LLLL'), Impedimento: ""})
+
+                                break
+
+                            }
+                            case "Sexta": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "fazendo", Dia: moment().day(5).format('LLLL'), Impedimento: ""})
+
+                                break
+
+                            }
+
+                            case "Proxima Semana": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "fazendo", Dia: moment().day(12).format('LLLL'), Impedimento: ""})
+
+                                break
+
+                            }
+
+                        }
+
+                        break
+
+                    }
+
+                    case "Não entrege": {
+
+                        switch (data?.value) {
+
+                            case "Segunda": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "nao entregada", Dia: moment().day(1).format('LLLL'), Impedimento: ""})
+
+                                break
+
+                            }
+
+                            case "Terça": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "nao entregada", Dia: moment().day(2).format('LLLL'), Impedimento: ""})
+
+                                break
+
+                            }
+                            case "Quarta": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "nao entregada", Dia: moment().day(3).format('LLLL'), Impedimento: ""})
+
+                                break
+
+                            }
+                            case "Quinta": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "nao entregada", Dia: moment().day(4).format('LLLL'), Impedimento: ""})
+
+                                break
+
+                            }
+                            case "Sexta": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "nao entregada", Dia: moment().day(5).format('LLLL'), Impedimento: ""})
+
+                                break
+
+                            }
+
+                            case "Proxima Semana": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "fazendo", Dia: moment().day(12).format('LLLL'), Impedimento: ""})
+
+                                break
+
+                            }
+
+                        }
+
+                        break
+
+                    }
+
+                    case "Concluido": {
+
+                        switch (data?.value) {
+
+                            case "Segunda": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "concluido", Dia: moment().day(1).format('LLLL'), Impedimento: ""})
+
+                                break
+
+                            }
+
+                            case "Terça": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "concluido", Dia: moment().day(2).format('LLLL'), Impedimento: ""})
+
+                                break
+
+                            }
+                            case "Quarta": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "concluido", Dia: moment().day(3).format('LLLL'), Impedimento: ""})
+
+                                break
+
+                            }
+                            case "Quinta": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "concluido", Dia: moment().day(4).format('LLLL'), Impedimento: ""})
+
+                                break
+
+                            }
+                            case "Sexta": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "concluido", Dia: moment().day(5).format('LLLL'), Impedimento: ""})
+
+                                break
+
+                            }
+
+                            case "Proxima Semana": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "concluido", Dia: moment().day(12).format('LLLL'), Impedimento: ""})
+
+                                break
+
+                            }
+
+                        }
+
+                        break
+
+                    }
+
+                    case "Impedido": {
+
+                        switch (data?.value) {
+
+                            case "Segunda": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "impedida", Dia: moment().day(1).format('LLLL'), Impedimento: imp?.value || ""})
+
+                                break
+
+                            }
+
+                            case "Terça": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "impedida", Dia: moment().day(2).format('LLLL'), Impedimento: imp?.value || ""})
+
+                                break
+
+                            }
+                            case "Quarta": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "impedida", Dia: moment().day(3).format('LLLL'), Impedimento: imp?.value || ""})
+
+                                break
+
+                            }
+                            case "Quinta": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "impedida", Dia: moment().day(4).format('LLLL'), Impedimento: imp?.value || ""})
+
+                                break
+
+                            }
+                            case "Sexta": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "impedida", Dia: moment().day(5).format('LLLL'), Impedimento: imp?.value || ""})
+
+                                break
+
+                            }
+
+                            case "Proxima Semana": {
+
+                                Deliveries.push({Card_Id: id, Descricao: desc || "", Status: "impedida", Dia: moment().day(12).format('LLLL'), Impedimento: imp?.value || ""})
+
+                                break
+
+                            }
+
+                        }
+
+                        break
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        await tr.PostTrello(Todo, Doing, Bloked, Done, Deliveries)
 
     }
 

@@ -23,6 +23,7 @@
     "express": "^4.17.1",
     "gulp": "^4.0.2",
     "jquery": "^3.5.0",
+    "moment": "^2.25.3",
     "slim-select": "^1.26.0",
     "sweetalert2": "^9.10.12",
     "typescript": "^3.8.3",
