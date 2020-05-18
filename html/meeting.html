@@ -90,21 +90,21 @@
 
                         <div style="display: none;" id="entregas">
 
-                            <button class="button small icon fa-plus" id="bt_en" style="margin-top: 10px; margin-bottom: 10px;">Add Nova Entrega</button>
+                            <a class="button small alt icon fa-plus" id="bt_en" style="margin-top: 10px; margin-bottom: 10px;" name="Add Nova Entrega">Add Nova Entrega</a>
 
                             <div id="d_en" style="display: block;"></div>
 
-                            <button class="button small icon fa-plus" id="bt_en" style="margin-top: 10px; margin-bottom: 10px;">Add Nova Entrega</button>
+                            <a class="button small alt icon fa-plus" id="bt_en" style="margin-top: 10px; margin-bottom: 10px;" name="Add Nova Entrega">Add Nova Entrega</a>
 
                         </div>
 
                         <div style="display: none;" id="tarefas">
 
-                            <button class="button small icon fa-plus" id="bt_add" style="margin-top: 10px; margin-bottom: 10px;">Add Nova Tarefa</button>
+                            <a class="button small icon fa-plus" id="bt_add" style="margin-top: 10px; margin-bottom: 10px;" name="Add Nova Tarefa">Add Nova Tarefa</a>
 
                             <div id="d_tf" style="display: block;"></div>
 
-                            <button class="button small icon fa-plus" id="bt_add" style="margin-top: 10px; margin-bottom: 10px;">Add Nova Tarefa</button>
+                            <a class="button small icon fa-plus" id="bt_add" style="margin-top: 10px; margin-bottom: 10px;" name="Add Nova Tarefa">Add Nova Tarefa</a>
 
                         </div>
 
@@ -114,8 +114,39 @@
                 <input type='submit' id="bt_team" name="Enviar" class="special"></input>
 
             </section>
-        
+
         </form>
+
+        <section id="3" class="wrapper special" style="background-color: #22323f; display: none;">
+
+            <div class="inner">
+
+                <header class="major narrow">
+
+                    <form id="form_reset">
+
+                        <span style="color: white; font-size: 2.5em; font-weight: bold; text-transform: uppercase;">Área de Finalização</span>
+
+                        <div class="row uniform 50%" style="margin-top: 10px;">
+
+                            <div class="9u 12u$(xsmall)">
+                                <input type="text" name="name" id="name" value="" placeholder="Titulo da semana" style="color: white; background-color: #2b3f4e;" required>
+                            </div>
+
+                            <div class="1u 12u$(xsmall)" style="margin-top: 5px;">
+                                <input type="submit" name="finalizar" id="finalizar" value="Finalizar semana">
+                            </div>
+
+                        </div>
+
+                    </form>
+
+                </header>
+
+            </div>
+
+        </section>
+
 
 		<!-- Footer -->
         <footer id="footer">
