@@ -1,4 +1,4 @@
-import { app, BrowserWindow, globalShortcut } from 'electron'
+import { app, BrowserWindow, globalShortcut, Menu } from 'electron'
 
 const globalAny: any = global
 
@@ -17,6 +17,45 @@ function createWindow() {
 		}
 	})
 
+	let menu = Menu.buildFromTemplate([
+		{
+			label: 'Menu',
+			submenu: [
+				{label:'Home', click: () => {win.loadFile('./html/index.html')}, accelerator: 'esc'},
+				{type: 'separator'},
+				{label:'Documentação', click: () => {}, accelerator: 'ctrl+1'},
+				{label:'Team Meeting', click: () => {win.loadFile('./html/meeting.html')}, accelerator: 'ctrl+2'},
+				{label:'Conhecimentos', click: () => {}, accelerator: 'ctrl+3'}
+			]
+		},
+		{
+			label: 'Window',
+			submenu: [
+				{label:'Maximizar', click: () => {win.maximize()}},
+				{label:'Minimizar', click: () => {win.minimize()}},
+				{type: 'separator'},
+				{label:'Ativar/Desativar Tela cheia', click: () => {
+					
+					if (win.isFullScreen()) {
+
+						win.setFullScreen(false)
+
+					}
+					else {
+
+						win.setFullScreen(true)
+
+					}
+				
+				}, accelerator: 'f11'},
+				{type: 'separator'},
+				{label:'Sair', click: () => {app.exit()}}
+
+			]
+		}
+	])
+	Menu.setApplicationMenu(menu); 
+
 	// and load the index.html of the app.
 	win.loadFile('./html/index.html')
 
@@ -31,7 +70,7 @@ app.allowRendererProcessReuse = true
 // Algumas APIs podem ser usadas somente depois que este evento ocorre.
 app.whenReady().then(() => {
 
-	globalShortcut.register('f12', () => {
+	globalShortcut.register('ctrl+shift+i', () => {
 
 		if (!Dev) {
 
@@ -48,11 +87,11 @@ app.whenReady().then(() => {
 
 	})
 
-	globalShortcut.register('esc', () => {
+	// globalShortcut.register('esc', () => {
 
-		win.loadFile("./html/index.html")
+	// 	win.loadFile("./html/index.html")
 
-	})
+	// })
 
 	createWindow()
 

@@ -1598,6 +1598,7 @@ const change_user = async () => {
     else {
 
         div_tarefas?.setAttribute("style", "display: none")
+        div_entregas?.setAttribute("style", "display: none")
 
     }
 
@@ -2457,6 +2458,8 @@ from_reset?.addEventListener('submit', async (e) => {
     const div_tf: HTMLDivElement | null = document.querySelector("div#d_tf")
     const div_en: HTMLDivElement | null = document.querySelector("div#d_en")
 
+    const t_semana: HTMLInputElement | null = document.querySelector('input#t_semana')
+
     let Todo: ObjTrello[] = []
     let Doing: ObjTrello[] = []
     let Done: ObjTrello[] = []
@@ -2758,7 +2761,8 @@ from_reset?.addEventListener('submit', async (e) => {
 
         nome: string,
         marcada: boolean,
-        pessoas: string[]
+        pessoas: string[],
+        id: string
 
     }
 
@@ -2767,7 +2771,8 @@ from_reset?.addEventListener('submit', async (e) => {
         nome: string,
         marcada: boolean,
         pessoas: string[],
-        tipo: "Tarefa" | "Entrega"
+        tipo: "Tarefa" | "Entrega",
+        id: string
 
     }
 
@@ -2783,36 +2788,32 @@ from_reset?.addEventListener('submit', async (e) => {
     let idTarefas: string = ""
     let idBloqueadas: string = ""
 
-    //setTimeout(async () => {
+    const progressBar = new ProgressBar({
+        text: 'Finalizando Semana...',
+        detail: 'Espere...',
+        title: 'Finalizando...'
+    });
 
-        const progressBar = new ProgressBar({
-            text: 'Finalizando Semana...',
-            detail: 'Espere...',
-            title: 'Finalizando...'
-        });
+    progressBar.on('completed', function () {
+        progressBar.detail = 'Finalizado. Fechando...';
+    })
 
-        progressBar.on('completed', function () {
-            progressBar.detail = 'Finalizado. Fechando...';
-        })
+    progressBar.on('aborted', function () {
+        console.info(`finalizacao abortado`);
+        Swal.fire('O trello não respondeu :(', 'Infelismente o sistema só funciona com o trello, tente novamente mais tarde', 'error')
+    });
 
-        progressBar.on('aborted', function () {
-            console.info(`finalizacao abortado`);
-            Swal.fire('O trello não respondeu :(', 'Infelismente o sistema só funciona com o trello, tente novamente mais tarde', 'error')
-        });
+    console.log(progressBar)
 
-        console.log(progressBar)
+    for (let cf in configs) {
 
-        for (let cf in configs) {
+        for (let t in configs[cf].teams) {
 
-            for (let t in configs[cf].teams) {
+            if (configs[cf].teams[t].name == select_team?.value) {
 
-                if (configs[cf].teams[t].name == select_team?.value) {
+                for (let l in configs[cf].teams[t].trello.lists) {
 
-                    for (let l in configs[cf].teams[t].trello.lists) {
-
-                        lists = configs[cf].teams[t].trello.lists
-
-                    }
+                    lists = configs[cf].teams[t].trello.lists
 
                 }
 
@@ -2820,85 +2821,35 @@ from_reset?.addEventListener('submit', async (e) => {
 
         }
 
-        for (let l in lists) {
+    }
 
-            if (lists[l].name == "Past") {
+    for (let l in lists) {
 
-                listPast = lists[l].id
+        if (lists[l].name == "Past") {
 
-                continue
+            listPast = lists[l].id
 
-            }
-            else {
+            continue
 
-                await axios.get("https://api.trello.com/1/lists/" + lists[l].id + "/cards?key=" + "c8055ea81e83e2f2aee0a17139667194" + "&token=" + "3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
-                .then(r => {
+        }
+        else {
 
-                    let res: ReturnList[] = r.data
+            await axios.get("https://api.trello.com/1/lists/" + lists[l].id + "/cards?key=" + "c8055ea81e83e2f2aee0a17139667194" + "&token=" + "3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
+            .then(r => {
 
-                    for (let c in res) {
+                let res: ReturnList[] = r.data
 
-                        let users: string[] = []
+                for (let c in res) {
 
-                        for (let u in res[c].idMembers) {
+                    let users: string[] = []
 
-                            for (let i in idUsers) {
+                    for (let u in res[c].idMembers) {
 
-                                if (idUsers[i].id == res[c].idMembers[u]) {
+                        for (let i in idUsers) {
 
-                                    users.push(idUsers[i].name)
-                                    break
+                            if (idUsers[i].id == res[c].idMembers[u]) {
 
-                                }
-
-                            }
-
-                        }
-
-                        switch (lists[l].name) {
-
-                            case "To Do": case "Doing": {
-
-                                Tarefas.push({nome: res[c].name, marcada: false, pessoas: users})
-
-                                break
-
-                            }
-
-                            case "Done": {
-
-                                Tarefas.push({nome: res[c].name, marcada: true, pessoas: users})
-
-                                break
-
-                            }
-
-                            case "Blocked": {
-
-                                Bloqueadas.push({nome: res[c].name, marcada: false, pessoas: users, tipo: "Tarefa"})
-
-                                break
-
-                            }
-
-                            case "Deliveries": {
-
-                                if (res[c].dueComplete) {                        
-                                    
-                                    Entregas.push({nome: res[c].name, marcada: true, pessoas: users})
-
-                                }
-                                else if (res[c].desc.includes("impedimento: ")) {
-
-                                    Bloqueadas.push({nome: res[c].name, marcada: false, pessoas: users, tipo: "Entrega"})
-
-                                }
-                                else {
-
-                                    Entregas.push({nome: res[c].name, marcada: false, pessoas: users})
-
-                                }
-
+                                users.push(idUsers[i].name)
                                 break
 
                             }
@@ -2907,158 +2858,208 @@ from_reset?.addEventListener('submit', async (e) => {
 
                     }
 
-                })
+                    switch (lists[l].name) {
 
-            }
+                        case "To Do": case "Doing": {
+
+                            Tarefas.push({nome: res[c].name, marcada: false, pessoas: users, id: res[c].id})
+
+                            break
+
+                        }
+
+                        case "Done": {
+
+                            Tarefas.push({nome: res[c].name, marcada: true, pessoas: users, id: res[c].id})
+
+                            break
+
+                        }
+
+                        case "Blocked": {
+
+                            Bloqueadas.push({nome: res[c].name, marcada: false, pessoas: users, tipo: "Tarefa", id: res[c].id})
+
+                            break
+
+                        }
+
+                        case "Deliveries": {
+
+                            if (res[c].dueComplete) {                        
+                                
+                                Entregas.push({nome: res[c].name, marcada: true, pessoas: users, id: res[c].id})
+
+                            }
+                            else if (res[c].desc.includes("impedimento: ")) {
+
+                                Bloqueadas.push({nome: res[c].name, marcada: false, pessoas: users, tipo: "Entrega", id: res[c].id})
+
+                            }
+                            else {
+
+                                Entregas.push({nome: res[c].name, marcada: false, pessoas: users, id: res[c].id})
+
+                            }
+
+                            break
+
+                        }
+
+                    }
+
+                }
+
+            })
 
         }
 
-        await axios.post("https://api.trello.com/1/cards?name=Dia X a Dia Y"+"&idList="+listPast+"&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
-        .then(async (r: AxiosResponse<ReturnNewCard>) => {
+    }
 
-            idCard = r.data.id
+    progressBar.detail = "Criando Card..."
 
-            await axios.post("https://api.trello.com/1/checklists?idCard="+idCard+"&name=Entregas"+"&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
+    await axios.post("https://api.trello.com/1/cards?name="+t_semana?.value+"&idList="+listPast+"&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
+    .then(async (r: AxiosResponse<ReturnNewCard>) => {
+
+        idCard = r.data.id
+
+        await axios.post("https://api.trello.com/1/checklists?idCard="+idCard+"&name=Entregas"+"&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
+        .then(async (r: AxiosResponse<ReturnNewChecklist>) => {
+
+            idEntregas = r.data.id
+
+            await axios.post("https://api.trello.com/1/checklists?idCard="+idCard+"&name=Tarefas"+"&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
             .then(async (r: AxiosResponse<ReturnNewChecklist>) => {
-
-                idEntregas = r.data.id
-
-                await axios.post("https://api.trello.com/1/checklists?idCard="+idCard+"&name=Tarefas"+"&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
+        
+                idTarefas = r.data.id
+        
+                await axios.post("https://api.trello.com/1/checklists?idCard="+idCard+"&name=Bloqueadas"+"&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
                 .then(async (r: AxiosResponse<ReturnNewChecklist>) => {
             
-                    idTarefas = r.data.id
+                    idBloqueadas = r.data.id
+
+                    let i = 4
+
+                    progressBar.detail = "Finalizando Entregas..."
+
+                    for (let e in Entregas) {
+
+                        if (i >= 20) {
+
+                            sleep(1)
+                            i = 0
+
+                        }
+
+                        if (Entregas[e].marcada) {
+
+                            await axios.post("https://api.trello.com/1/checklists/"+idEntregas+"/checkItems?name="+Entregas[e].nome+" ("+Entregas[e].pessoas.join(",")+")"+"&checked=true&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
+                            .then((r: AxiosResponse<ReturnNewCheckOnCheckList>) => {})
+
+                            await axios.delete("https://api.trello.com/1/cards/"+Entregas[e].id+"?key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
+
+                        }
+                        else {
+
+                            await axios.post("https://api.trello.com/1/checklists/"+idEntregas+"/checkItems?name="+Entregas[e].nome+" ("+Entregas[e].pessoas.join(",")+")"+"&checked=false&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
+                            .then((r: AxiosResponse<ReturnNewCheckOnCheckList>) => {})
+
+                        }
+
+                        i += 2
+
+                    }
+
+                    console.log("Entregas pronto")
+
+                    progressBar.detail = "Finalizando Tarefas..."
+
+                    for (let e in Tarefas) {
+
+                        if (i >= 20) {
+
+                            sleep(1)
+                            i = 0
+
+                        }
+
+                        if (Tarefas[e].marcada) {
+
+                            await axios.post("https://api.trello.com/1/checklists/"+idTarefas+"/checkItems?name="+Tarefas[e].nome+" ("+Tarefas[e].pessoas.join(",")+")"+"&checked=true&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
+                            .then((r: AxiosResponse<ReturnNewCheckOnCheckList>) => {})
+
+                            await axios.delete("https://api.trello.com/1/cards/"+Tarefas[e].id+"?key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
+
+                        }
+                        else {
+
+                            await axios.post("https://api.trello.com/1/checklists/"+idTarefas+"/checkItems?name="+Tarefas[e].nome+" ("+Tarefas[e].pessoas.join(",")+")"+"&checked=false&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
+                            .then((r: AxiosResponse<ReturnNewCheckOnCheckList>) => {})
+
+                        }
+
+                        i += 2
+
+                    }
+
+                    console.log("Tarefas pronto")
+
+                    progressBar.detail = "Finalizando Bloqueadas..."
+
+                    for (let e in Bloqueadas) {
+
+                        if (i >= 20) {
+
+                            sleep(1)
+                            i = 0
+
+                        }
+
+                        if (Bloqueadas[e].marcada) {
+
+                            if (Bloqueadas[e].tipo == "Entrega") {
+
+                                await axios.post("https://api.trello.com/1/checklists/"+idBloqueadas+"/checkItems?name="+Bloqueadas[e].nome+" ("+Bloqueadas[e].pessoas.join(",")+") [Entrega]"+"&checked=true&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
+                                .then((r: AxiosResponse<ReturnNewCheckOnCheckList>) => {})
+
+                            }
+                            else {
+
+                                await axios.post("https://api.trello.com/1/checklists/"+idBloqueadas+"/checkItems?name="+Bloqueadas[e].nome+" ("+Bloqueadas[e].pessoas.join(",")+") [Tarefa]"+"&checked=true&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
+                                .then((r: AxiosResponse<ReturnNewCheckOnCheckList>) => {})
+
+                            }
+
+                        }
+                        else {
+
+                            if (Bloqueadas[e].tipo == "Entrega") {
+
+                                await axios.post("https://api.trello.com/1/checklists/"+idBloqueadas+"/checkItems?name="+Bloqueadas[e].nome+" ("+Bloqueadas[e].pessoas.join(",")+") [Entrega]"+"&checked=false&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
+                                .then((r: AxiosResponse<ReturnNewCheckOnCheckList>) => {})
+
+                            }
+                            else {
+
+                                await axios.post("https://api.trello.com/1/checklists/"+idBloqueadas+"/checkItems?name="+Bloqueadas[e].nome+" ("+Bloqueadas[e].pessoas.join(",")+") [Tarefa]"+"&checked=false&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
+                                .then((r: AxiosResponse<ReturnNewCheckOnCheckList>) => {})
+
+                            }
+
+                        }
+
+                        i++
+
+                    }
+
+                    console.log("Bloqueadas pronto")
+
+                    setTimeout(() => {
+
+                        progressBar.setCompleted();
+
+                    }, 1000)
             
-                    await axios.post("https://api.trello.com/1/checklists?idCard="+idCard+"&name=Bloqueadas"+"&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
-                    .then(async (r: AxiosResponse<ReturnNewChecklist>) => {
-                
-                        idBloqueadas = r.data.id
-
-                        let i = 4
-
-                        progressBar.detail = "Finalizando Entregas..."
-
-                        for (let e in Entregas) {
-
-                            if (i >= 20) {
-
-                                sleep(1)
-                                i = 0
-
-                            }
-
-                            if (Entregas[e].marcada) {
-
-                                await axios.post("https://api.trello.com/1/checklists/"+idEntregas+"/checkItems?name="+Entregas[e].nome+" ("+Entregas[e].pessoas.join(",")+")"+"&checked=true&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
-                                .then((r: AxiosResponse<ReturnNewCheckOnCheckList>) => {})
-
-                            }
-                            else {
-
-                                await axios.post("https://api.trello.com/1/checklists/"+idEntregas+"/checkItems?name="+Entregas[e].nome+" ("+Entregas[e].pessoas.join(",")+")"+"&checked=false&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
-                                .then((r: AxiosResponse<ReturnNewCheckOnCheckList>) => {})
-
-                            }
-
-                            i++
-
-                        }
-
-                        console.log("Entregas pronto")
-
-                        progressBar.detail = "Finalizando Tarefas..."
-
-                        for (let e in Tarefas) {
-
-                            if (i >= 20) {
-
-                                sleep(1)
-                                i = 0
-
-                            }
-
-                            if (Tarefas[e].marcada) {
-
-                                await axios.post("https://api.trello.com/1/checklists/"+idTarefas+"/checkItems?name="+Tarefas[e].nome+" ("+Tarefas[e].pessoas.join(",")+")"+"&checked=true&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
-                                .then((r: AxiosResponse<ReturnNewCheckOnCheckList>) => {})
-
-                            }
-                            else {
-
-                                await axios.post("https://api.trello.com/1/checklists/"+idTarefas+"/checkItems?name="+Tarefas[e].nome+" ("+Tarefas[e].pessoas.join(",")+")"+"&checked=false&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
-                                .then((r: AxiosResponse<ReturnNewCheckOnCheckList>) => {})
-
-                            }
-
-                            i++
-
-                        }
-
-                        console.log("Tarefas pronto")
-
-                        progressBar.detail = "Finalizando Bloqueadas..."
-
-                        for (let e in Bloqueadas) {
-
-                            if (i >= 20) {
-
-                                sleep(1)
-                                i = 0
-
-                            }
-
-                            if (Bloqueadas[e].marcada) {
-
-                                if (Bloqueadas[e].tipo == "Entrega") {
-
-                                    await axios.post("https://api.trello.com/1/checklists/"+idBloqueadas+"/checkItems?name="+Bloqueadas[e].nome+" ("+Bloqueadas[e].pessoas.join(",")+") [Entrega]"+"&checked=true&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
-                                    .then((r: AxiosResponse<ReturnNewCheckOnCheckList>) => {})
-
-                                }
-                                else {
-
-                                    await axios.post("https://api.trello.com/1/checklists/"+idBloqueadas+"/checkItems?name="+Bloqueadas[e].nome+" ("+Bloqueadas[e].pessoas.join(",")+") [Tarefa]"+"&checked=true&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
-                                    .then((r: AxiosResponse<ReturnNewCheckOnCheckList>) => {})
-
-                                }
-
-                            }
-                            else {
-
-                                if (Bloqueadas[e].tipo == "Entrega") {
-
-                                    await axios.post("https://api.trello.com/1/checklists/"+idBloqueadas+"/checkItems?name="+Bloqueadas[e].nome+" ("+Bloqueadas[e].pessoas.join(",")+") [Entrega]"+"&checked=false&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
-                                    .then((r: AxiosResponse<ReturnNewCheckOnCheckList>) => {})
-
-                                }
-                                else {
-
-                                    await axios.post("https://api.trello.com/1/checklists/"+idBloqueadas+"/checkItems?name="+Bloqueadas[e].nome+" ("+Bloqueadas[e].pessoas.join(",")+") [Tarefa]"+"&checked=false&key=c8055ea81e83e2f2aee0a17139667194&token=3a4b27878c8792aa5f2950fe40681bb4bfffb31331d6ebd94773e15b7e4985b4")
-                                    .then((r: AxiosResponse<ReturnNewCheckOnCheckList>) => {})
-
-                                }
-
-                            }
-
-                            i++
-
-                        }
-
-                        console.log("Bloqueadas pronto")
-
-                        setTimeout(() => {
-
-                            progressBar.setCompleted();
-
-                        }, 1000)
-                
-                    })
-                    .catch(e => {
-
-                        console.log(e)
-                        progressBar.close();
-
-                    })
-
                 })
                 .catch(e => {
 
@@ -3083,6 +3084,19 @@ from_reset?.addEventListener('submit', async (e) => {
 
         })
 
-    //}, 2000)
+    })
+    .catch(e => {
+
+        console.log(e)
+        progressBar.close();
+
+    })
+
+    if (select_user != undefined) {
+
+        select_user.value = ""
+        change_user()
+
+    }
 
 })
