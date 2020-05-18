@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "npm run build && electron .",
-    "pack": "electron-builder --dir",
+    "pack": "electron-builder --dir --win --publish always",
     "dist": "electron-builder"
   },
   "author": "",
@@ -23,6 +23,7 @@
     "axios": "^0.19.2",
     "electron-alert": "^0.1.5",
     "electron-progressbar": "^1.2.0",
+    "electron-updater": "^4.3.1",
     "emfn": "^1.0.3",
     "express": "^4.17.1",
     "gulp": "^4.0.2",
@@ -35,10 +36,16 @@
   },
   "build": {
     "appId": "com.inov.knowledge",
+    "publish": {
+      "provider": "github",
+      "token": "fc93de3dafc83df5840567e45002d0e05bc5509e"
+    },
     "win": {
-
       "target": "portable"
-
     }
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/EmanuelScherer/Knowledge.git"
   }
 }
