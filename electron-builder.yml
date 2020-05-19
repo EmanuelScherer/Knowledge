@@ -1,0 +1,7 @@
+
+appId: com.inov.knowledge
+publish: 
+  provider: "github"
+  token: "c36b04a435ed62d168e59120da16ad599a72dd1e"
+win: 
+  target: "nsis"

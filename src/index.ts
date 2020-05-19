@@ -1,4 +1,7 @@
-import { app, BrowserWindow, globalShortcut, Menu } from 'electron'
+import { app, BrowserWindow, globalShortcut, Menu, ipcRenderer } from 'electron'
+import Swal from 'sweetalert2';
+
+const { autoUpdater } = require('electron-updater');
 
 const globalAny: any = global
 
@@ -70,6 +73,8 @@ app.allowRendererProcessReuse = true
 // Algumas APIs podem ser usadas somente depois que este evento ocorre.
 app.whenReady().then(() => {
 
+	autoUpdater.checkForUpdatesAndNotify();
+
 	globalShortcut.register('ctrl+shift+i', () => {
 
 		if (!Dev) {
@@ -119,3 +124,31 @@ app.on('activate', () => {
 		createWindow()
 	}
 })
+
+autoUpdater.setFeedURL({
+	"provider": "github",
+	"owner": "EmanuelScherer",
+	"token": "c36b04a435ed62d168e59120da16ad599a72dd1e",
+	"repo": "Knowledge"
+});
+
+autoUpdater.on('update-available', () => {
+	win.webContents.send('update_available');
+});
+autoUpdater.on('update-downloaded', () => {
+	win.webContents.send('update_downloaded');
+});
+
+ipcRenderer.on('update_available', () => {
+	ipcRenderer.removeAllListeners('update_available');
+	
+	Swal.fire('Update!', '', 'warning')
+
+});
+
+ipcRenderer.on('update-downloaded', () => {
+	ipcRenderer.removeAllListeners('update-downloaded');
+	
+	Swal.fire('Update baixado!', '', 'success')
+
+});
