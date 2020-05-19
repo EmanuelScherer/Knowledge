@@ -1,12 +1,12 @@
 {
   "name": "knowledge",
-  "version": "1.0.1",
+  "version": "1.0.1-",
   "description": "Knowledge",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
     "start": "npm run build && electron .",
-    "pack": "electron-builder build --win --publish always",
+    "pack": "electron-builder build --win",
     "dist": "electron-builder"
   },
   "author": "Emanuel de Souza Scherer",

@@ -125,20 +125,6 @@ app.on('activate', () => {
 	}
 })
 
-autoUpdater.setFeedURL({
-	"provider": "github",
-	"owner": "EmanuelScherer",
-	"token": "c36b04a435ed62d168e59120da16ad599a72dd1e",
-	"repo": "Knowledge"
-});
-
-autoUpdater.on('update-available', () => {
-	win.webContents.send('update_available');
-});
-autoUpdater.on('update-downloaded', () => {
-	win.webContents.send('update_downloaded');
-});
-
 ipcRenderer.on('update_available', () => {
 	ipcRenderer.removeAllListeners('update_available');
 	
