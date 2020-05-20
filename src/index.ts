@@ -1,13 +1,12 @@
-import { app, BrowserWindow, globalShortcut, Menu, ipcRenderer } from 'electron'
-import Swal from 'sweetalert2';
-
-const { autoUpdater } = require('electron-updater');
+import { app, BrowserWindow, globalShortcut, Menu } from 'electron'
 
 const globalAny: any = global
 
 let win: BrowserWindow
 
 let Dev: boolean = false
+
+const {download} = require('electron-dl');
 
 function createWindow() {
 
@@ -59,6 +58,8 @@ function createWindow() {
 	])
 	Menu.setApplicationMenu(menu); 
 
+	globalAny.win = win
+
 	// and load the index.html of the app.
 	win.loadFile('./html/index.html')
 
@@ -72,8 +73,6 @@ app.allowRendererProcessReuse = true
 // initialization and is ready to create browser windows.
 // Algumas APIs podem ser usadas somente depois que este evento ocorre.
 app.whenReady().then(() => {
-
-	autoUpdater.checkForUpdatesAndNotify();
 
 	globalShortcut.register('ctrl+shift+i', () => {
 
@@ -98,11 +97,13 @@ app.whenReady().then(() => {
 
 	// })
 
-	createWindow()
-
 	const ProgressBar = require('../src/electron-progressbar/source/index');
 
 	globalAny.ProgressBar = ProgressBar
+	globalAny.app = app
+	globalAny.download = download
+
+	createWindow()
 
 	win.maximize()
 
@@ -124,17 +125,3 @@ app.on('activate', () => {
 		createWindow()
 	}
 })
-
-ipcRenderer.on('update_available', () => {
-	ipcRenderer.removeAllListeners('update_available');
-	
-	Swal.fire('Update!', '', 'warning')
-
-});
-
-ipcRenderer.on('update-downloaded', () => {
-	ipcRenderer.removeAllListeners('update-downloaded');
-	
-	Swal.fire('Update baixado!', '', 'success')
-
-});
