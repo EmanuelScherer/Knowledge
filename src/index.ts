@@ -7,6 +7,7 @@ let win: BrowserWindow
 let Dev: boolean = false
 
 const {download} = require('electron-dl');
+const fs = require('fs-extra')
 
 function createWindow() {
 
@@ -110,11 +111,15 @@ app.whenReady().then(() => {
 })
 
 // Quit when all windows are closed.
-app.on('window-all-closed', () => {
+app.on('window-all-closed', async () => {
 	// No macOS é comum para aplicativos e sua barra de menu 
 	// permaneçam ativo até que o usuário explicitamente encerre com Cmd + Q
 	if (process.platform !== 'darwin') {
+		
+		await fs.emptyDir(app.getAppPath()+'/instaladores')
+
 		app.quit()
+
 	}
 })
 
