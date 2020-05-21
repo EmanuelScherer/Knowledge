@@ -13,8 +13,9 @@
   "author": "Emanuel de Souza Scherer",
   "license": "ISC",
   "devDependencies": {
+    "electron": "8.2.1",
     "electron-builder": "^22.6.1",
-    "electron": "8.2.1"
+    "electron-packager": "^14.2.1"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
@@ -23,6 +24,7 @@
     "await-exec": "^0.1.2",
     "axios": "^0.19.2",
     "electron-alert": "^0.1.5",
+    "electron-builder-squirrel-windows": "^22.6.1",
     "electron-dl": "^3.0.0",
     "electron-progressbar": "^1.2.0",
     "emfn": "^1.0.3",

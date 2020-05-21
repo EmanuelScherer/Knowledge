@@ -1,4 +1,4 @@
-
 appId: com.inov.knowledge
+asar: false
 win: 
   target: "nsis"

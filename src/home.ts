@@ -211,6 +211,8 @@ electron.remote.getGlobal('win').webContents.session.on('will-download', (e: any
 
 const Update = async () => {
 
+    await fs.emptyDir(electron.remote.getGlobal("app").getAppPath()+"/instaladores")
+
     await axios.get("https://api.github.com/repos/EmanuelScherer/Knowledge/releases/latest")
     .then(async (r: AxiosResponse<ReturnLastRelease>) => {
 
@@ -230,7 +232,7 @@ const Update = async () => {
             })
             .then(async (result) => {
 
-                await download(electron.remote.getGlobal('win'), r.data.assets[0].browser_download_url, {directory: electron.remote.getGlobal("app").getAppPath()+"/instaladores"})
+                await download(electron.remote.getGlobal('win'), r.data.assets[0].browser_download_url, {directory: electron.remote.getGlobal("app").getAppPath()+'/instaladores'})
 
                 Swal.fire({
                     title: 'Update!',
@@ -240,14 +242,16 @@ const Update = async () => {
                 })
                 .then(async (result) => {
                    
-                    await exec(electron.remote.getGlobal("app").getAppPath()+'/instaladores/'+r.data.assets[0].name, function(err: any, data: any) {  
+                    // const { spawn } = require('child_process');
+                    // const ls = spawn('./instaladores/'+r.data.assets[0].name);
+
+                    await exec('cmd /C "'+electron.remote.getGlobal("app").getAppPath()+"/instaladores/"+r.data.assets[0].name+'"', function(err: any, data: any) {  
                         console.log(err)
-                        console.log(data.toString());                       
+                        console.log(data.toString()); 
+                        
+                        electron.remote.getGlobal("app").quit()
+
                     });  
-
-                    await fs.emptyDir(electron.remote.getGlobal("app").getAppPath()+'/instaladores')
-
-                    electron.remote.getGlobal("app").quit()
 
                 })
 
