@@ -5,8 +5,8 @@ import axios, { AxiosResponse } from 'axios'
 const pack = require('../package.json')
 const ProgressBar = electron.remote.getGlobal('ProgressBar');
 const download = electron.remote.getGlobal('download')
-const exec = require('await-exec')
 const fs = require('fs-extra')
+const openExplorer = require('open-file-explorer');
 
 interface ReturnLastRelease {
     "url": "https://api.github.com/repos/EmanuelScherer/Knowledge/releases/26672046",
@@ -180,7 +180,7 @@ electron.remote.getGlobal('win').webContents.session.on('will-download', (e: any
 
             if (!progressBar.isCompleted()) {
 
-                progressBar.detail = Number(item.getReceivedBytes()/1000000).toFixed(2)+"mb baixados de "+Number(item.getTotalBytes()/1000000).toFixed(2)+"mb"
+                progressBar.detail = Number(item.getReceivedBytes()/1048576).toFixed(2)+"mb baixados de "+Number(item.getTotalBytes()/1048576).toFixed(2)+"mb"
 
                 progressBar.value = item.getReceivedBytes()/item.getTotalBytes()*100
 
@@ -236,22 +236,20 @@ const Update = async () => {
 
                 Swal.fire({
                     title: 'Update!',
-                    text: 'Update baixado, O programa será fechado para instalar o update',
+                    text: 'Update baixado. O programa será fechado para adicionar o update',
                     icon: 'warning',
                     showCancelButton: false,
                 })
                 .then(async (result) => {
                    
-                    // const { spawn } = require('child_process');
-                    // const ls = spawn('./instaladores/'+r.data.assets[0].name);
+                    openExplorer(electron.remote.getGlobal("app").getAppPath()+'\\instaladores\\'+r.data.assets[0].name, (err: any) => {
+                        if(err) {
+                            console.log(err);
 
-                    await exec('cmd /C "'+electron.remote.getGlobal("app").getAppPath()+"/instaladores/"+r.data.assets[0].name+'"', function(err: any, data: any) {  
-                        console.log(err)
-                        console.log(data.toString()); 
-                        
-                        electron.remote.getGlobal("app").quit()
+                            Swal.fire('Erro', 'O programa não pode abrir o explorador de arquivos', 'error')
 
-                    });  
+                        }
+                    });
 
                 })
 

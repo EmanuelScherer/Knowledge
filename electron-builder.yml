@@ -1,4 +1,18 @@
 appId: com.inov.knowledge
 asar: false
 win: 
-  target: "nsis"
+  target:
+   - "nsis"
+nsis:
+  menuCategory: false
+  oneClick: false
+  perMachine: false
+  allowElevation: false
+  # installerHeaderIcon: resources/icon.ico
+  # installerIcon: resources/icon.ico
+  # uninstallerIcon: resources/icon.ico
+  # installerSidebar: resources/installerSidebar.bmp
+  # uninstallerSidebar: resources/installerSidebar.bmp
+  allowToChangeInstallationDirectory: false
+  # runAfterFinish: false
+  # artifactName: ${productName}-Installer-${version}.${ext}

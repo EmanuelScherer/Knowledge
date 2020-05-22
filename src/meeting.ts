@@ -108,7 +108,7 @@ let config: OConfig
 
 let configs: OConfig[] = []
 
-const configsInDir = fs.readdirSync("./configs")
+const configsInDir = fs.readdirSync(electron.remote.getGlobal('app').getAppPath()+"\\configs")
 
 const from_team: HTMLFormElement | null = document.querySelector("form#form_team")
 const select_team: HTMLSelectElement | null = document.querySelector("#select_team")
@@ -260,6 +260,8 @@ class Trello {
 
                     for (let l in configs[cf].teams[t].trello.lists) {
 
+                        lists.push({id: configs[cf].teams[t].trello.lists[l].id, name: configs[cf].teams[t].trello.lists[l].name})
+
                         await axios.get("https://api.trello.com/1/lists/" + configs[cf].teams[t].trello.lists[l].id + "/cards?key=" + this.key + "&token=" + this.token)
                             .then(r => {
 
@@ -269,27 +271,27 @@ class Trello {
 
                                     if (res[c].idMembers.includes(id)) {
 
+                                        let UsersSelect: String[] = []
+
+                                        for (let idm in res[c].idMembers) {
+
+                                            for (let u in configs[cf].teams[t].users) {
+
+                                                if (configs[cf].teams[t].users[u].id == res[c].idMembers[idm]) {
+
+                                                    UsersSelect.push(configs[cf].teams[t].users[u].name)
+
+                                                }
+
+                                            }
+
+                                        }
+
                                         switch (configs[cf].teams[t].trello.lists[l].name) {
 
                                             case "To Do": case "Doing":
 
                                                 AddNode(res[c].name, res[c].id, false);
-
-                                                let UsersSelect: String[] = []
-
-                                                for (let idm in res[c].idMembers) {
-
-                                                    for (let u in configs[cf].teams[t].users) {
-
-                                                        if (configs[cf].teams[t].users[u].id == res[c].idMembers[idm]) {
-
-                                                            UsersSelect.push(configs[cf].teams[t].users[u].name)
-
-                                                        }
-
-                                                    }
-
-                                                }
 
                                                 console.log(UsersSelect)
                                                 console.log(Multis[Multis.length - 1])
@@ -305,6 +307,12 @@ class Trello {
                                             case "Blocked":
 
                                                 AddNode(res[c].name, res[c].id, true, res[c].desc.replace("Impedimento: ", ""));
+
+                                                console.log(UsersSelect)
+                                                console.log(Multis[Multis.length - 1])
+
+                                                Multis[Multis.length - 1].multi.set(UsersSelect)
+
                                                 break;
 
                                             case "Deliveries":
@@ -378,12 +386,22 @@ class Trello {
 
                                                             AddNodeEntregas(res[c].name, res[c].id, false, status, dia, res[c].desc.replace("Impedimento: ", ""))
 
+                                                            console.log(UsersSelect)
+                                                            console.log(Multis[Multis.length - 1])
+        
+                                                            Multis[Multis.length - 1].multi.set(UsersSelect)
+
                                                         }
                                                         else {
 
                                                             status = "impedida"
 
                                                             AddNodeEntregas(res[c].name, res[c].id, true, status, dia, res[c].desc.replace("Impedimento: ", ""))
+
+                                                            console.log(UsersSelect)
+                                                            console.log(Multis[Multis.length - 1])
+        
+                                                            Multis[Multis.length - 1].multi.set(UsersSelect)
 
                                                         }
 
@@ -424,7 +442,7 @@ class Trello {
 
                                                         case "Fri": {
 
-                                                            if (parseInt(moment().utc().format().toString().split(" ")[2]) - parseInt(split[2]) > -7) {
+                                                            if (parseInt(moment().utc().format().toString().split("-")[2]) - parseInt(split[2]) >= -7) {
 
                                                                 dia = "sexta"
                                                                 break
@@ -457,6 +475,11 @@ class Trello {
                                                     }
 
                                                     AddNodeEntregas(res[c].name, res[c].id, false, status, dia)
+
+                                                    console.log(UsersSelect)
+                                                    console.log(Multis[Multis.length - 1])
+
+                                                    Multis[Multis.length - 1].multi.set(UsersSelect)
 
                                                 }
 
@@ -996,7 +1019,7 @@ const ClearSelect = (id: string) => {
 
 for (let file in configsInDir) {
 
-    config = JSON.parse(fs.readFileSync("./configs/" + configsInDir[file], "utf8"))
+    config = JSON.parse(fs.readFileSync(electron.remote.getGlobal('app').getAppPath()+"\\configs\\" + configsInDir[file], "utf8"))
 
     configs.push(config)
 
@@ -1916,7 +1939,12 @@ bt_add_entregas?.forEach(b => {
 
         let list = ""
 
+        console.log(lists)
+
         for (let c in lists) {
+
+            console.log(lists)
+            console.log(lists[c])
 
             if (lists[c].name == "Deliveries") {
 
