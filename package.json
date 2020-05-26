@@ -10,7 +10,7 @@
     "pack": "npm run build && electron-builder build --win",
     "dist": "electron-builder"
   },
-  "author": "Emanuel de Souza Scherer",
+  "author": "Meta InnovationCenter",
   "license": "ISC",
   "devDependencies": {
     "electron": "8.2.1",

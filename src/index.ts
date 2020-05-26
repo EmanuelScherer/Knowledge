@@ -1,4 +1,4 @@
-import { app, BrowserWindow, globalShortcut, Menu } from 'electron'
+import { app, BrowserWindow, globalShortcut, Menu, ipcMain } from 'electron'
 
 const globalAny: any = global
 
@@ -63,7 +63,7 @@ function createWindow() {
 	globalAny.win = win
 
 	// and load the index.html of the app.
-	win.loadFile('./html/index.html')
+	win.loadFile('./html/login.html')
 
 	// Open the DevTools.
 	//win.webContents.openDevTools()
@@ -108,6 +108,12 @@ app.whenReady().then(() => {
 	createWindow()
 
 	win.maximize()
+
+})
+
+ipcMain.on('SetLogin', (event, value) => {
+
+	globalAny.login = value
 
 })
 

@@ -1,18 +1,20 @@
 appId: com.inov.knowledge
 asar: false
+
 win: 
   target:
    - "nsis"
+  icon: icons/Brain_Knowledge.ico
+
 nsis:
   menuCategory: false
   oneClick: false
   perMachine: false
   allowElevation: false
-  # installerHeaderIcon: resources/icon.ico
-  # installerIcon: resources/icon.ico
-  # uninstallerIcon: resources/icon.ico
-  # installerSidebar: resources/installerSidebar.bmp
+  installerIcon: icons/Brain_Knowledge.ico
+  # uninstallerIcon:
+  installerHeaderIcon: icons/Brain_Knowledge.ico
+  # installerSidebar: icons/Instalador_Sidebar.bmp
   # uninstallerSidebar: resources/installerSidebar.bmp
   allowToChangeInstallationDirectory: false
-  # runAfterFinish: false
-  # artifactName: ${productName}-Installer-${version}.${ext}
+  artifactName: Knowledge-Installer-${version}.${ext}

@@ -1,12 +1,10 @@
 import * as electron from 'electron';
 import Swal from 'sweetalert2';
 import axios, { AxiosResponse } from 'axios'
- 
-const pack = require('../package.json')
-const ProgressBar = electron.remote.getGlobal('ProgressBar');
-const download = electron.remote.getGlobal('download')
-const fs = require('fs-extra')
-const openExplorer = require('open-file-explorer');
+
+import * as electronHome from 'electron';
+import * as SwalHome from 'sweetalert2';
+import * as axiosHome from 'axios'
 
 interface ReturnLastRelease {
     "url": "https://api.github.com/repos/EmanuelScherer/Knowledge/releases/26672046",
@@ -151,13 +149,13 @@ interface ReturnLastRelease {
     "body": ""
 }
 
-electron.remote.getGlobal('win').webContents.session.on('will-download', (e: any, item: any, webContents: any) => {
+electronHome.remote.getGlobal('win').webContents.session.on('will-download', (e: any, item: any, webContents: any) => {
 
 	e.preventDefault()
 
     console.log("Baixando arquivo...")
 
-    const progressBar = new ProgressBar({
+    const progressBar = new ProgressBarHome({
         text: 'Baixando update...',
         detail: 'Espere...',
         title: 'Baixando...',
@@ -171,7 +169,7 @@ electron.remote.getGlobal('win').webContents.session.on('will-download', (e: any
 
     progressBar.on('aborted', function () {
         console.info(`get abortado`);
-        Swal.fire('Erro no  download', 'error')
+        SwalHome.default.fire('Erro no  download', 'error')
     });
 
     item.on('updated', (event: any, state: any) => {
@@ -211,12 +209,12 @@ electron.remote.getGlobal('win').webContents.session.on('will-download', (e: any
 
 const Update = async () => {
 
-    await fs.emptyDir(electron.remote.getGlobal("app").getAppPath()+"/instaladores")
+    await fsHome.emptyDir(electronHome.remote.getGlobal("app").getAppPath()+"/instaladores")
 
-    await axios.get("https://api.github.com/repos/EmanuelScherer/Knowledge/releases/latest")
-    .then(async (r: AxiosResponse<ReturnLastRelease>) => {
+    await axiosHome.default.get("https://api.github.com/repos/EmanuelScherer/Knowledge/releases/latest")
+    .then(async (r: axiosHome.AxiosResponse<ReturnLastRelease>) => {
 
-        const Atual = pack.version
+        const Atual = packHome.version
         const Last = r.data.name
 
         console.log("Version Atual: "+Atual)
@@ -224,7 +222,7 @@ const Update = async () => {
 
         if (Atual != Last) {
 
-            Swal.fire({
+            SwalHome.default.fire({
                 title: 'Update!',
                 text: 'Novo update: v'+Atual+" -> v"+Last+'. Ele será baixado e instalado agora',
                 icon: 'warning',
@@ -232,9 +230,9 @@ const Update = async () => {
             })
             .then(async (result) => {
 
-                await download(electron.remote.getGlobal('win'), r.data.assets[0].browser_download_url, {directory: electron.remote.getGlobal("app").getAppPath()+'/instaladores'})
+                await downloadHome(electronHome.remote.getGlobal('win'), r.data.assets[0].browser_download_url, {directory: electronHome.remote.getGlobal("app").getAppPath()+'/instaladores'})
 
-                Swal.fire({
+                SwalHome.default.fire({
                     title: 'Update!',
                     text: 'Update baixado. O programa será fechado para adicionar o update',
                     icon: 'warning',
@@ -242,11 +240,11 @@ const Update = async () => {
                 })
                 .then(async (result) => {
                    
-                    openExplorer(electron.remote.getGlobal("app").getAppPath()+'\\instaladores\\'+r.data.assets[0].name, (err: any) => {
+                    openExplorerHome(electronHome.remote.getGlobal("app").getAppPath()+'\\instaladores\\'+r.data.assets[0].name, (err: any) => {
                         if(err) {
                             console.log(err);
 
-                            Swal.fire('Erro', 'O programa não pode abrir o explorador de arquivos', 'error')
+                            SwalHome.default.fire('Erro', 'O programa não pode abrir o explorador de arquivos', 'error')
 
                         }
                     });
@@ -267,3 +265,144 @@ const Update = async () => {
 }
 
 Update()
+
+const packHome = require('../package.json')
+const ProgressBarHome = electronHome.remote.getGlobal('ProgressBar');
+const downloadHome = electronHome.remote.getGlobal('download')
+const fsHome = require('fs-extra')
+const openExplorerHome = require('open-file-explorer');
+
+const form_login: HTMLFormElement | null = document.querySelector("form#login")
+
+const win = electron.remote.getGlobal('win') as electron.BrowserWindow
+
+const Input_Login: HTMLInputElement | null = document.querySelector("input#InpLogin")
+const Input_Senha: HTMLInputElement | null = document.querySelector("input#InpSenha")
+
+let b = false
+
+let LoginCookie = ""
+
+electron.remote.session.defaultSession.cookies.get({name: 'login'}).then((Cookies) => {
+    
+    const r = Cookies[0].value.split(",")
+
+    if (Input_Login != undefined && Input_Senha != undefined) {
+
+        Input_Login.value = r[0]
+        Input_Senha.value = r[1]
+
+        LoginCookie = r[0]
+
+    }
+
+    b = true
+
+})
+
+electron.remote.session.defaultSession.cookies.get({}).then((Cookies) => {
+    
+    console.log(Cookies)
+
+})
+
+const ConfirmaLogin = (login: string, senha: string) => {
+
+    return new Promise((resolve) => {
+
+        //Codigo q confima
+
+        resolve(true)
+
+    })
+
+}
+
+form_login?.addEventListener('submit', async (e) => {
+
+    e.preventDefault()
+
+    const login: string | undefined = Input_Login?.value
+    const senha: string | undefined = Input_Senha?.value
+
+    if (login == undefined) {
+
+        Swal.fire('Erro', 'O login não pode ser pego', 'error')
+        return false
+
+    }
+    else if (senha == undefined) {
+
+        Swal.fire('Erro', 'A senha não pode ser pega', 'error')
+        return false
+
+    }
+    else {
+
+        if (b) {
+
+            if (Input_Login?.value == LoginCookie) {
+
+                await ConfirmaLogin(login, senha).then(r => {
+
+                    if (r) {
+
+                        electron.ipcRenderer.send('SetLogin', require(electron.remote.getGlobal('app').getAppPath()+"\\configs\\InovTeam.json"))
+                        win.loadFile('./html/index.html')
+
+                    }
+                    else {
+
+                        Swal.fire('Erro', 'Login e/ou Senha errado(s)', 'error')
+
+                    }
+
+                })
+
+            }
+            else {
+
+                await ConfirmaLogin(login, senha).then(r => {
+
+                    if (r) {
+
+                        electron.ipcRenderer.send('SetLogin', require(electron.remote.getGlobal('app').getAppPath()+"\\configs\\InovTeam.json"))
+                        electron.remote.session.defaultSession.cookies.set({name: 'login', value: login+","+senha, url: "https://www.google.com/", expirationDate: 30 * 24 * 60 * 60 * 1000, secure: true}).then(() => win.loadFile('./html/index.html'))
+
+                    }
+                    else {
+
+                        Swal.fire('Erro', 'Login e/ou Senha errado(s)', 'error')
+
+                    }
+
+                })
+
+            }
+
+        }
+        else {
+
+            await ConfirmaLogin(login, senha).then(r => {
+
+                if (r) {
+
+                    electron.ipcRenderer.send('SetLogin', require(electron.remote.getGlobal('app').getAppPath()+"\\configs\\InovTeam.json"))
+                    electron.remote.session.defaultSession.cookies.set({name: 'login', value: login+","+senha, url: "https://www.google.com/", expirationDate: 30 * 24 * 60 * 60 * 1000, secure: true}).then(() => win.loadFile('./html/index.html'))
+
+                }
+                else {
+
+                    Swal.fire('Erro', 'Login e/ou Senha errado(s)', 'error')
+
+                }
+
+            })
+
+        }
+
+        //electron.remote.session.defaultSession.cookies.remove('https://www.google.com/', 'aaa')
+
+    }
+
+})
