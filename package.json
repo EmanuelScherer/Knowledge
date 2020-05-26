@@ -7,8 +7,7 @@
     "build": "tsc",
     "start": "electron .",
     "dev": "npm run build && electron .",
-    "pack": "npm run build && electron-builder build --win",
-    "dist": "electron-builder"
+    "pack": "npm run build && electron-builder build --win"
   },
   "author": "Meta InnovationCenter",
   "license": "ISC",
