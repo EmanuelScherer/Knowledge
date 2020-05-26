@@ -43,7 +43,8 @@ else {
         "login": {
 
             "email": string,
-            "senha": string
+            "senha": string,
+            "trello": string
 
         },
 
@@ -1078,6 +1079,8 @@ else {
 
     let Multis: Multi[] = []
 
+    const time = electron.remote.getGlobal('time')
+
     const GeraMulti = (id: string, data: dataSelect[]) => {
 
         const multi = new SlimSelect({
@@ -1641,6 +1644,70 @@ else {
 
     }
 
+    const change_team = () => {
+
+        let b = false
+
+        ClearSelect("select_user")
+
+        if (select_team != undefined && select_team.value != "") {
+
+            const op = document.createElement("option")
+            const op2 = document.createElement("option")
+
+            op.value = ""
+            op.text = "- Selecione uma pessoa -"
+
+            op2.value = "Random"
+            op2.text = "- Selecionar random -"
+
+            select_user?.append(op)
+            select_user?.append(op2)
+
+            for (let config in configs) {
+
+                for (let team in configs[config].teams) {
+
+                    if (configs[config].teams[team].name == select_team.value) {
+
+                        for (let user in configs[config].teams[team].users) {
+
+                            AddToSelect("select_user", configs[config].teams[team].users[user].name)
+
+                            idUsers.push({name: configs[config].teams[team].users[user].name, id: configs[config].teams[team].users[user].id})
+
+                            NEscolido.push(configs[config].teams[team].users[user].name)
+
+                        }
+
+                        b = true
+                        break
+
+                    }
+
+                }
+
+                if (b) {
+
+                    break
+
+                }
+
+            }
+
+            div_2?.setAttribute("style", "display: block;")
+            div_3?.setAttribute("style", "background-color: #22323f; display: block;")
+
+        }
+        else {
+
+            div_2?.setAttribute("style", "display: none;")
+            div_3?.setAttribute("style", "background-color: #22323f; display: none;")
+
+        }
+
+    }
+
     const sleep = (s: number) => {
 
         let inicio = Date.now()
@@ -2095,69 +2162,7 @@ else {
 
     select_user?.addEventListener('change', change_user)
 
-    select_team?.addEventListener('change', (e) => {
-
-        let b = false
-
-        ClearSelect("select_user")
-
-        if (select_team.value != "") {
-
-            const op = document.createElement("option")
-            const op2 = document.createElement("option")
-
-            op.value = ""
-            op.text = "- Selecione uma pessoa -"
-
-            op2.value = "Random"
-            op2.text = "- Selecionar random -"
-
-            select_user?.append(op)
-            select_user?.append(op2)
-
-            for (let config in configs) {
-
-                for (let team in configs[config].teams) {
-
-                    if (configs[config].teams[team].name == select_team.value) {
-
-                        for (let user in configs[config].teams[team].users) {
-
-                            AddToSelect("select_user", configs[config].teams[team].users[user].name)
-
-                            idUsers.push({name: configs[config].teams[team].users[user].name, id: configs[config].teams[team].users[user].id})
-
-                            NEscolido.push(configs[config].teams[team].users[user].name)
-
-                        }
-
-                        b = true
-                        break
-
-                    }
-
-                }
-
-                if (b) {
-
-                    break
-
-                }
-
-            }
-
-            div_2?.setAttribute("style", "display: block;")
-            div_3?.setAttribute("style", "background-color: #22323f; display: block;")
-
-        }
-        else {
-
-            div_2?.setAttribute("style", "display: none;")
-            div_3?.setAttribute("style", "background-color: #22323f; display: none;")
-
-        }
-
-    })
+    select_team?.addEventListener('change', change_team)
 
     from_team?.addEventListener('submit', async (e) => {
 
@@ -3142,5 +3147,16 @@ else {
         }
 
     })
+    
+    if (time != "" && time != null && time != undefined) {
+
+        if (select_team != undefined) {
+
+            select_team.value = time
+            change_team()
+
+        }
+
+    }
 
 }

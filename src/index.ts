@@ -117,6 +117,18 @@ ipcMain.on('SetLogin', (event, value) => {
 
 })
 
+ipcMain.on('SetTime', (event, value) => {
+
+	globalAny.time = value
+
+})
+
+ipcMain.on('SetUser', (event, value) => {
+
+	globalAny.user = value
+
+})
+
 // Quit when all windows are closed.
 app.on('window-all-closed', async () => {
 	// No macOS é comum para aplicativos e sua barra de menu 

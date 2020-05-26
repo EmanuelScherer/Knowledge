@@ -7,7 +7,8 @@
     "login": {
 
         "email": "emanuel.scherer@meta.com.br",
-        "senha": "aaa"
+        "senha": "aaa",
+        "trello": "emanuelscherer5"
 
     },
 
@@ -70,47 +71,58 @@
 
                 {
                     "name": "Emanuel",
-                    "id": "5e2b22035793c41dd1018cf5"
+                    "id": "5e2b22035793c41dd1018cf5",
+                    "login": "emanuel.scherer@meta.com.br"
                 },
                 {
                     "name": "João",
-                    "id": ""
+                    "id": "",
+                    "login": ""
                 },
                 {
                     "name": "Eric",
-                    "id": "5e21d929294f947614eba3b2"
+                    "id": "5e21d929294f947614eba3b2",
+                    "login": ""
                 },
                 {
                     "name": "Nicolas",
-                    "id": ""
+                    "id": "",
+                    "login": ""
                 },
                 {
                     "name": "Thiago",
-                    "id": ""
+                    "id": "",
+                    "login": ""
                 },
                 {
                     "name": "Claudio",
-                    "id": ""
+                    "id": "",
+                    "login": ""
                 },
                 {
                     "name": "Makisine",
-                    "id": ""
+                    "id": "",
+                    "login": ""
                 },
                 {
                     "name": "Leonardo",
-                    "id": ""
+                    "id": "",
+                    "login": ""
                 },
                 {
                     "name": "Fabrico",
-                    "id": ""
+                    "id": "",
+                    "login": ""
                 },
                 {
                     "name": "Romulo",
-                    "id": ""
+                    "id": "",
+                    "login": ""
                 },
                 {
                     "name": "Brendan",
-                    "id": ""
+                    "id": "",
+                    "login": ""
                 }
 
             ]
@@ -124,19 +136,23 @@
 
                 {
                     "name": "Emanuel",
-                    "id": "5e2b22035793c41dd1018cf5"
+                    "id": "5e2b22035793c41dd1018cf5",
+                    "login": ""
                 },
                 {
                     "name": "Player2",
-                    "id": ""
+                    "id": "",
+                    "login": ""
                 },
                 {
                     "name": "Player3",
-                    "id": ""
+                    "id": "",
+                    "login": ""
                 },
                 {
                     "name": "Player4",
-                    "id": ""
+                    "id": "",
+                    "login": ""
                 }
 
             ]
