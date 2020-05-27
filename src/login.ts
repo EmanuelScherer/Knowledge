@@ -4,10 +4,6 @@ import axios, { AxiosResponse } from 'axios'
 
 const bd = require('../DataBase/connect.js')
 
-const update = electron.remote.getGlobal('update')
-
-update.Update()
-
 const form_login: HTMLFormElement | null = document.querySelector("form#login")
 
 const win = electron.remote.getGlobal('win') as electron.BrowserWindow

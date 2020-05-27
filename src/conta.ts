@@ -1,10 +1,6 @@
 import * as electron from 'electron'
 import Swal from 'sweetalert2'
 
-const update = electron.remote.getGlobal('update')
-
-update.Update()
-
 interface OConfig {
 
     "name": string,
