@@ -114,11 +114,31 @@ for (let t in user.teams) {
         .then((r: Time) => {
 
             electron.ipcRenderer.send('SetTime', r)
-            electron.remote.getGlobal('win').loadFile('../html/time.html')
+            electron.remote.getGlobal('win').loadFile('./html/time.html')
 
         })
 
     })
 
+    bt_tarefa.addEventListener('click', () => {
+
+        bd.GetTeam(user.teams[t].name)
+        .then((time: Time) => {
+
+            bd.GetUser(user.name)
+            .then((user: User) => {
+
+                electron.ipcRenderer.send('SetTime', time)
+                electron.ipcRenderer.send('SetUser', user)
+                electron.remote.getGlobal('win').loadFile('./html/meeting.html')
+
+            })
+
+        })
+
+    })
+
+    times.appendChild(bt_time)
+    tarefas.appendChild(bt_tarefa)
 
 }

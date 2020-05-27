@@ -197,7 +197,7 @@ for (let u in time.users) {
         .then((r: User) => {
 
             electron.ipcRenderer.send("SetUser", r)
-            electron.remote.getGlobal('win').loadFile("../html/user.html")
+            electron.remote.getGlobal('win').loadFile("./html/user.html")
 
         })
 
