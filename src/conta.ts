@@ -1,4 +1,9 @@
 import * as electron from 'electron'
+import Swal from 'sweetalert2'
+
+const update = electron.remote.getGlobal('update')
+
+update.Update()
 
 interface OConfig {
 
@@ -87,36 +92,46 @@ interface OConfig {
 
 const login = electron.remote.getGlobal('login') as OConfig
 
-const nome: HTMLInputElement = document.querySelector("input#nome") as HTMLInputElement
-const area: HTMLInputElement = document.querySelector("input#area") as HTMLInputElement
-const email: HTMLInputElement = document.querySelector("input#email") as HTMLInputElement
-const senha: HTMLInputElement = document.querySelector("input#senha") as HTMLInputElement
-const trello: HTMLInputElement = document.querySelector("input#trello") as HTMLInputElement
+if (login == undefined || login == null) {
+    Swal.fire('Não autenticado', 'Você deve entrar na sua conta para ver essa pagina', 'warning')
+        .then(() => {
+            electron.remote.getGlobal('win').loadFile('./html/login.html');
+    });
+}
+else {
 
-nome.value = login.name
-area.value = login.area
-email.value = login.login.email
-senha.value = login.login.senha
-trello.value = login.login.trello
+    const nome: HTMLInputElement = document.querySelector("input#nome") as HTMLInputElement
+    const area: HTMLInputElement = document.querySelector("input#area") as HTMLInputElement
+    const email: HTMLInputElement = document.querySelector("input#email") as HTMLInputElement
+    const senha: HTMLInputElement = document.querySelector("input#senha") as HTMLInputElement
+    const trello: HTMLInputElement = document.querySelector("input#trello") as HTMLInputElement
 
-const times = document.querySelector("div#times") as HTMLDivElement
+    nome.value = login.name
+    area.value = login.area
+    email.value = login.login.email
+    senha.value = login.login.senha
+    trello.value = login.login.trello
 
-for (let t in login.teams) {
+    const times = document.querySelector("div#times") as HTMLDivElement
 
-    const bt = document.createElement("input")
+    for (let t in login.teams) {
 
-    bt.type = "button"
-    bt.name = login.teams[t].name
-    bt.value = login.teams[t].name
-    bt.className = "big fit"
+        const bt = document.createElement("input")
 
-    bt.addEventListener("click", () => {
+        bt.type = "button"
+        bt.name = login.teams[t].name
+        bt.value = login.teams[t].name
+        bt.className = "big fit"
 
-        electron.ipcRenderer.send('SetTime', login.teams[t])
-        electron.remote.getGlobal('win').loadFile('./html/time.html')
+        bt.addEventListener("click", () => {
 
-    })
+            electron.ipcRenderer.send('SetTime', login.teams[t])
+            electron.remote.getGlobal('win').loadFile('./html/time.html')
 
-    times.appendChild(bt)
+        })
+
+        times.appendChild(bt)
+
+    }
 
 }

@@ -62,6 +62,10 @@ function createWindow() {
 
 	globalAny.win = win
 
+	const update = require('../update.js')
+
+	globalAny.update = update
+
 	// and load the index.html of the app.
 	win.loadFile('./html/login.html')
 
@@ -99,7 +103,7 @@ app.whenReady().then(() => {
 
 	// })
 
-	const ProgressBar = require('../src/electron-progressbar/source/index');
+	const ProgressBar = require('../src/electron-progressbar/source/index')
 
 	globalAny.ProgressBar = ProgressBar
 	globalAny.app = app

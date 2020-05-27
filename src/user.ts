@@ -1,8 +1,23 @@
 import * as electron from 'electron'
+import Swal from 'sweetalert2'
 
-const bd = require('../DataBase/connect.js')
+const update = electron.remote.getGlobal('update')
 
-interface User {
+update.Update()
+
+const login = electron.remote.getGlobal('login')
+
+if (login == undefined || login == null || login == {}) {
+    Swal.fire('Não autenticado', 'Você deve entrar na sua conta para ver essa pagina', 'warning')
+        .then(() => {
+            electron.remote.getGlobal('win').loadFile('./html/login.html');
+    });
+}
+else {
+
+    const bd = require('../DataBase/connect.js')
+
+    interface User {
 
     "name": string,
 
@@ -20,12 +35,12 @@ interface User {
 
     ]   
 
-}
+    }
 
-interface Time {
+    interface Time {
 
     "name": string,
-    
+
     "trello": {
 
         "board": string,
@@ -85,26 +100,26 @@ interface Time {
 
     ]
 
-}
+    }
 
-const user = electron.remote.getGlobal('user') as User
+    const user = electron.remote.getGlobal('user') as User
 
-const nome = document.querySelector("h2#nome") as HTMLHeadingElement
-const times = document.querySelector("div#times") as HTMLDivElement
-const tarefas_subtitulo = document.querySelector("p#tarefas_subtitulo") as HTMLParagraphElement
-const tarefas = document.querySelector("div#tarefas") as HTMLDivElement
+    const nome = document.querySelector("h2#nome") as HTMLHeadingElement
+    const times = document.querySelector("div#times") as HTMLDivElement
+    const tarefas_subtitulo = document.querySelector("p#tarefas_subtitulo") as HTMLParagraphElement
+    const tarefas = document.querySelector("div#tarefas") as HTMLDivElement
 
-nome.textContent = user.name
-tarefas_subtitulo.textContent = "Visualizar as tarefas de "+user.name
+    nome.textContent = user.name
+    tarefas_subtitulo.textContent = "Visualizar as tarefas de "+user.name
 
-for (let t in user.teams) {
+    for (let t in user.teams) {
 
     const bt_time = document.createElement("button")
     const bt_tarefa = document.createElement("button")
 
     bt_time.textContent = user.teams[t].name
     bt_time.className = "big special"
-    
+
     bt_tarefa.textContent = user.teams[t].name
     bt_tarefa.className = "big special"
 
@@ -138,7 +153,9 @@ for (let t in user.teams) {
 
     })
 
-    times.appendChild(bt_time)
-    tarefas.appendChild(bt_tarefa)
+        times.appendChild(bt_time)
+        tarefas.appendChild(bt_tarefa)
+
+    }
 
 }

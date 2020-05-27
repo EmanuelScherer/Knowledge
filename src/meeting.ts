@@ -7,6 +7,10 @@ import * as moment from 'moment';
 
 const login = electron.remote.getGlobal('login')
 
+const update = electron.remote.getGlobal('update')
+
+update.Update()
+
 if (login == undefined || login == null || login == {}) {
 
     Swal.fire('Não autenticado', 'Você deve entrar na sua conta para ver essa pagina', 'warning')
