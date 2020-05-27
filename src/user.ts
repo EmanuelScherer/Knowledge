@@ -114,49 +114,61 @@ else {
 
     for (let t in user.teams) {
 
-    const bt_time = document.createElement("input")
-    const bt_tarefa = document.createElement("input")
+        for (let tt in login.teams) {
 
-    bt_time.type = "button"
-    bt_time.value = user.teams[t].name
-    bt_time.className = "big special fit"
+            if (login.teams[tt].name == user.teams[t].name) {
 
-    bt_tarefa.type = "button"
-    bt_tarefa.value = user.teams[t].name
-    bt_tarefa.className = "big alt fit"
+                const bt_tarefa = document.createElement("input")
 
-    bt_time.addEventListener('click', () => {
+                bt_tarefa.type = "button"
+                bt_tarefa.value = user.teams[t].name
+                bt_tarefa.className = "big alt fit"
 
-        bd.GetTeam(user.teams[t].name)
-        .then((r: Time) => {
+                bt_tarefa.addEventListener('click', () => {
 
-            electron.ipcRenderer.send('SetTime', r)
-            electron.remote.getGlobal('win').loadFile('./html/time.html')
+                    bd.GetTeam(user.teams[t].name)
+                    .then((time: Time) => {
 
-        })
+                        bd.GetUser(user.name)
+                        .then((user: User) => {
 
-    })
+                            electron.ipcRenderer.send('SetTime', time)
+                            electron.ipcRenderer.send('SetUser', user)
+                            electron.remote.getGlobal('win').loadFile('./html/meeting.html')
 
-    bt_tarefa.addEventListener('click', () => {
+                        })
 
-        bd.GetTeam(user.teams[t].name)
-        .then((time: Time) => {
+                    })
 
-            bd.GetUser(user.name)
-            .then((user: User) => {
+                })
 
-                electron.ipcRenderer.send('SetTime', time)
-                electron.ipcRenderer.send('SetUser', user)
-                electron.remote.getGlobal('win').loadFile('./html/meeting.html')
+                tarefas.appendChild(bt_tarefa)
+
+                break
+
+            }
+
+        }
+
+        const bt_time = document.createElement("input")
+
+        bt_time.type = "button"
+        bt_time.value = user.teams[t].name
+        bt_time.className = "big special fit"
+
+        bt_time.addEventListener('click', () => {
+
+            bd.GetTeam(user.teams[t].name)
+            .then((r: Time) => {
+
+                electron.ipcRenderer.send('SetTime', r)
+                electron.remote.getGlobal('win').loadFile('./html/time.html')
 
             })
 
         })
 
-    })
-
         times.appendChild(bt_time)
-        tarefas.appendChild(bt_tarefa)
 
     }
 
