@@ -112,7 +112,7 @@ for (let t in login.teams) {
 
     bt.addEventListener("click", () => {
 
-        electron.ipcRenderer.send('SetTime', login.teams[t].name)
+        electron.ipcRenderer.send('SetTime', login.teams[t])
         electron.remote.getGlobal('win').loadFile('./html/time.html')
 
     })

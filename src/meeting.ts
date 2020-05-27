@@ -1079,8 +1079,6 @@ else {
 
     let Multis: Multi[] = []
 
-    const time = electron.remote.getGlobal('time')
-
     const GeraMulti = (id: string, data: dataSelect[]) => {
 
         const multi = new SlimSelect({
@@ -3148,12 +3146,81 @@ else {
 
     })
     
-    if (time != "" && time != null && time != undefined) {
+    interface Time {
+
+        "name": string,
+        
+        "trello": {
+
+            "board": string,
+            
+            "lists": [
+
+                {
+
+                    "name": "To Do",
+                    "id": string
+
+                },
+                {
+
+                    "name": "Doing",
+                    "id": string
+
+                },
+                {
+
+                    "name": "Done",
+                    "id": string
+
+                },
+                {
+
+                    "name": "Blocked",
+                    "id": string
+
+                },
+
+                {
+
+                    "name": "Deliveries",
+                    "id": string
+
+                },
+
+                {
+
+                    "name": "Past",
+                    "id": string
+
+                }
+
+            ]
+
+        },
+
+        "users" : [
+
+            {
+                "name": string,
+                "id": string,
+                "login": string
+            }
+
+        ]
+
+    }
+
+    const time = electron.remote.getGlobal('time') as Time
+
+    if (time != null && time != undefined) {
 
         if (select_team != undefined) {
 
-            select_team.value = time
+            select_team.value = time.name
             change_team()
+
+            electron.ipcRenderer.send("SetTime", "")
 
         }
 

@@ -1,5 +1,7 @@
 import * as electron from 'electron'
 
+const bd = require('../DataBase/connect.js')
+
 interface OConfig {
 
     "name": string,
@@ -85,34 +87,123 @@ interface OConfig {
 
 }
 
-const login = electron.remote.getGlobal('login') as OConfig
+interface User {
 
-const time = electron.remote.getGlobal('time') as string
+    "name": string,
+
+    "area": string,
+
+    "email": string,
+
+    "teams": [
+
+        {
+
+            "name": string
+            
+        }
+
+    ]   
+
+}
+
+interface Time {
+
+        "name": string,
+        
+        "trello": {
+
+            "board": string,
+            
+            "lists": [
+
+                {
+
+                    "name": "To Do",
+                    "id": string
+
+                },
+                {
+
+                    "name": "Doing",
+                    "id": string
+
+                },
+                {
+
+                    "name": "Done",
+                    "id": string
+
+                },
+                {
+
+                    "name": "Blocked",
+                    "id": string
+
+                },
+
+                {
+
+                    "name": "Deliveries",
+                    "id": string
+
+                },
+
+                {
+
+                    "name": "Past",
+                    "id": string
+
+                }
+
+            ]
+
+        },
+
+        "users" : [
+
+            {
+                "name": string,
+                "id": string,
+                "login": string
+            }
+
+        ]
+
+}
+
+//const login = electron.remote.getGlobal('login') as OConfig
+
+const time = electron.remote.getGlobal('time') as Time
 
 const membros = document.querySelector('div#membros') as HTMLDivElement
 const nome = document.querySelector('h2#Nome_Time') as HTMLHeadingElement
 const bt_tarefas = document.querySelector('button#tarefas') as HTMLButtonElement
 
-nome.textContent = time
+nome.textContent = time.name
 
-for (let t in login.teams) {
+for (let u in time.users) {
 
-    if (login.teams[t].name == time) {
+    const bt = document.createElement('input')
 
-        for (let u in login.teams[t].users) {
+    bt.type = "button"
+    bt.name = time.users[u].name
+    bt.value = time.users[u].name
+    bt.className = "big fit alt"
 
-            const bt = document.createElement('input')
+    bt.addEventListener('click', () => {
 
-            bt.type = "button"
-            bt.name = login.teams[t].users[u].name
-            bt.value = login.teams[t].users[u].name
-            bt.className = "big fit alt"
+        bd.GetUser(time.users[u].name)
+        .then((r: User) => {
 
-            membros.appendChild(bt)
+            electron.ipcRenderer.send("SetUser", r)
+            electron.remote.getGlobal('win').loadFile("../html/user.html")
 
-        }
+        })
 
-    }
+    })
+
+    membros.appendChild(bt)
 
 }
 

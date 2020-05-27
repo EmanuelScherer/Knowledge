@@ -207,6 +207,12 @@ electronHome.remote.getGlobal('win').webContents.session.on('will-download', (e:
 
 })
 
+const packHome = require('../package.json')
+const ProgressBarHome = electronHome.remote.getGlobal('ProgressBar');
+const downloadHome = electronHome.remote.getGlobal('download')
+const fsHome = require('fs-extra')
+const openExplorerHome = require('open-file-explorer');
+
 const Update = async () => {
 
     await fsHome.emptyDir(electronHome.remote.getGlobal("app").getAppPath()+"/instaladores")
@@ -266,12 +272,6 @@ const Update = async () => {
 
 Update()
 
-const packHome = require('../package.json')
-const ProgressBarHome = electronHome.remote.getGlobal('ProgressBar');
-const downloadHome = electronHome.remote.getGlobal('download')
-const fsHome = require('fs-extra')
-const openExplorerHome = require('open-file-explorer');
-
 const form_login: HTMLFormElement | null = document.querySelector("form#login")
 
 const win = electron.remote.getGlobal('win') as electron.BrowserWindow
@@ -306,13 +306,15 @@ electron.remote.session.defaultSession.cookies.get({}).then((Cookies) => {
 
 })
 
-const ConfirmaLogin = (login: string, senha: string) => {
+const ConfirmaLogin = (login: string, senha: string) : Promise<{ok: boolean, login: {}}> =>  {
 
     return new Promise((resolve) => {
 
         //Codigo q confima
 
-        resolve(true)
+        const json = require(electron.remote.getGlobal('app').getAppPath()+"\\configs\\InovTeam.json")
+
+        resolve({ok: true, login: json})
 
     })
 
@@ -345,9 +347,9 @@ form_login?.addEventListener('submit', async (e) => {
 
                 await ConfirmaLogin(login, senha).then(r => {
 
-                    if (r) {
+                    if (r.ok) {
 
-                        electron.ipcRenderer.send('SetLogin', require(electron.remote.getGlobal('app').getAppPath()+"\\configs\\InovTeam.json"))
+                        electron.ipcRenderer.send('SetLogin', r.login)
                         win.loadFile('./html/index.html')
 
                     }
@@ -364,9 +366,9 @@ form_login?.addEventListener('submit', async (e) => {
 
                 await ConfirmaLogin(login, senha).then(r => {
 
-                    if (r) {
+                    if (r.ok) {
 
-                        electron.ipcRenderer.send('SetLogin', require(electron.remote.getGlobal('app').getAppPath()+"\\configs\\InovTeam.json"))
+                        electron.ipcRenderer.send('SetLogin', r.login)
                         electron.remote.session.defaultSession.cookies.set({name: 'login', value: login+","+senha, url: "https://www.google.com/", expirationDate: 30 * 24 * 60 * 60 * 1000, secure: true}).then(() => win.loadFile('./html/index.html'))
 
                     }
@@ -385,9 +387,9 @@ form_login?.addEventListener('submit', async (e) => {
 
             await ConfirmaLogin(login, senha).then(r => {
 
-                if (r) {
+                if (r.ok) {
 
-                    electron.ipcRenderer.send('SetLogin', require(electron.remote.getGlobal('app').getAppPath()+"\\configs\\InovTeam.json"))
+                    electron.ipcRenderer.send('SetLogin', r.login)
                     electron.remote.session.defaultSession.cookies.set({name: 'login', value: login+","+senha, url: "https://www.google.com/", expirationDate: 30 * 24 * 60 * 60 * 1000, secure: true}).then(() => win.loadFile('./html/index.html'))
 
                 }
