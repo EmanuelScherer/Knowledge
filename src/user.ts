@@ -114,14 +114,16 @@ else {
 
     for (let t in user.teams) {
 
-    const bt_time = document.createElement("button")
-    const bt_tarefa = document.createElement("button")
+    const bt_time = document.createElement("input")
+    const bt_tarefa = document.createElement("input")
 
-    bt_time.textContent = user.teams[t].name
-    bt_time.className = "big special"
+    bt_time.type = "button"
+    bt_time.value = user.teams[t].name
+    bt_time.className = "big special fit"
 
-    bt_tarefa.textContent = user.teams[t].name
-    bt_tarefa.className = "big special"
+    bt_tarefa.type = "button"
+    bt_tarefa.value = user.teams[t].name
+    bt_tarefa.className = "big alt fit"
 
     bt_time.addEventListener('click', () => {
 

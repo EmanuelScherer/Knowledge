@@ -3215,7 +3215,28 @@ else {
 
     }
 
+    interface User {
+
+        "name": string,
+    
+        "area": string,
+    
+        "email": string,
+    
+        "teams": [
+    
+            {
+    
+                "name": string
+                
+            }
+    
+        ]   
+    
+    }
+
     const time = electron.remote.getGlobal('time') as Time
+    const userg = electron.remote.getGlobal('user') as User
 
     if (time != null && time != undefined) {
 
@@ -3225,6 +3246,19 @@ else {
             change_team()
 
             electron.ipcRenderer.send("SetTime", "")
+
+        }
+
+    }
+
+    if (userg != null && userg != undefined) {
+
+        if (select_user != undefined) {
+
+            select_user.value = userg.name
+            change_user()
+
+            electron.ipcRenderer.send("SetUser", "")
 
         }
 
