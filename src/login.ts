@@ -2,6 +2,8 @@ import * as electron from 'electron';
 import Swal from 'sweetalert2';
 import axios, { AxiosResponse } from 'axios'
 
+const bd = require('../DataBase/connect.js')
+
 const update = electron.remote.getGlobal('update')
 
 update.Update()
@@ -40,20 +42,6 @@ electron.remote.session.defaultSession.cookies.get({}).then((Cookies) => {
 
 })
 
-const ConfirmaLogin = (login: string, senha: string) : Promise<{ok: boolean, login: {}}> =>  {
-
-    return new Promise((resolve) => {
-
-        //Codigo q confima
-
-        const json = require(electron.remote.getGlobal('app').getAppPath()+"\\configs\\InovTeam.json")
-
-        resolve({ok: true, login: json})
-
-    })
-
-}
-
 form_login?.addEventListener('submit', async (e) => {
 
     e.preventDefault()
@@ -79,7 +67,7 @@ form_login?.addEventListener('submit', async (e) => {
 
             if (Input_Login?.value == LoginCookie) {
 
-                await ConfirmaLogin(login, senha).then(r => {
+                await bd.Login(login, senha).then((r: any) => {
 
                     if (r.ok) {
 
@@ -98,7 +86,7 @@ form_login?.addEventListener('submit', async (e) => {
             }
             else {
 
-                await ConfirmaLogin(login, senha).then(r => {
+                await bd.Login(login, senha).then((r: any) => {
 
                     if (r.ok) {
 
@@ -119,7 +107,7 @@ form_login?.addEventListener('submit', async (e) => {
         }
         else {
 
-            await ConfirmaLogin(login, senha).then(r => {
+            await bd.Login(login, senha).then((r: any) => {
 
                 if (r.ok) {
 
