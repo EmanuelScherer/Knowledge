@@ -68,16 +68,16 @@ const Update = async () => {
     await axiosHome.default.get("https://api.github.com/repos/EmanuelScherer/Knowledge/releases/latest")
         .then(async (r) => {
 
-            const Atual = packHome.version
-            const Last = r.data.name
+            let Atual = packHome.version
+            let Last = r.data.name
 
-            while (Atual.contains(".")) {
+            while (Atual.includes(".")) {
 
                 Atual = Atual.replace(".", "");
 
             }
 
-            while (Last.contains(".")) {
+            while (Last.includes(".")) {
 
                 Last = Last.replace(".", "");
 
