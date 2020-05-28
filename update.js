@@ -67,11 +67,27 @@ const Update = async () => {
     await fsHome.emptyDir(electronaaaaaaaaaaaaa.remote.getGlobal('app').getAppPath() + "/instaladores");
     await axiosHome.default.get("https://api.github.com/repos/EmanuelScherer/Knowledge/releases/latest")
         .then(async (r) => {
-        const Atual = packHome.version;
-        const Last = r.data.name;
+
+            const Atual = packHome.version
+            const Last = r.data.name
+
+            while (Atual.contains(".")) {
+
+                Atual = Atual.replace(".", "");
+
+            }
+
+            while (Last.contains(".")) {
+
+                Last = Last.replace(".", "");
+
+            }
+
+        Atual = parseInt(Atual);
+        Last = parseInt(Last);
         console.log("Version Atual: " + Atual);
         console.log("Version Last: " + Last);
-        if (Atual != Last) {
+        if (Atual < Last) {
 
                 SwalHome.fire({
                     title: 'Update!',
