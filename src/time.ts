@@ -204,7 +204,7 @@ else {
 
         bt.addEventListener('click', () => {
 
-            bd.GetUser(time.users[u].name)
+            bd.GetUser(time.users[u].login)
             .then((r: User) => {
 
                 electron.ipcRenderer.send("SetUser", r)

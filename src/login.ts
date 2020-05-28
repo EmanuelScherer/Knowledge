@@ -3,6 +3,7 @@ import Swal from 'sweetalert2';
 import axios, { AxiosResponse } from 'axios'
 
 const bd = require('../DataBase/connect.js')
+const nodemailer = require('nodemailer')
 
 const form_login: HTMLFormElement | null = document.querySelector("form#login")
 
@@ -10,6 +11,8 @@ const win = electron.remote.getGlobal('win') as electron.BrowserWindow
 
 const Input_Login: HTMLInputElement | null = document.querySelector("input#InpLogin")
 const Input_Senha: HTMLInputElement | null = document.querySelector("input#InpSenha")
+
+const esqueci = document.querySelector("a#esqueci") as HTMLLinkElement
 
 let b = false
 
@@ -37,6 +40,87 @@ electron.remote.session.defaultSession.cookies.get({name: 'login'}).then((Cookie
 electron.remote.session.defaultSession.cookies.get({}).then((Cookies) => {
     
     console.log(Cookies)
+
+})
+
+interface User {
+
+    "existe": boolean
+
+    "name": string,
+
+    "area": string,
+
+    "email": string,
+
+    "teams": [
+
+        {
+
+            "name": string
+            
+        }
+
+    ]   
+
+}
+
+esqueci.addEventListener("click", () => {
+
+    Swal.mixin({
+        confirmButtonText: 'Enviar',
+        showCancelButton: false,
+    }).queue([
+        {
+            input: "email",
+            title: "Recuperação de senha",
+            text: "Digite o email da conta",
+            icon: "info",
+        }
+    ]).then(r => {
+
+        bd.GetUser(r.value[0])
+        .then((user: User) => {
+
+            if (user.existe) {
+
+                let transporter = nodemailer.createTransport({
+                    host: "smtp-mail.outlook.com", // hostname
+                    secureConnection: false, // TLS requires secureConnection to be false
+                    port: 587, // port for secure SMTP
+                    tls: {
+                       ciphers:'SSLv3'
+                    },
+                    auth: {
+                        user: 'emanuel.scherer@meta.com.br',
+                        pass: 'qUkS@Skv1'
+                    }
+                });
+    
+                let mailOptions = {
+                    from: 'Knowledge <emanuel.scherer@meta.com.br>', // sender address (who sends)
+                    to: user.email, // list of receivers (who receives)
+                    subject: 'teste', // Subject line
+                    //text: 'teste', // plaintext body
+                    html: '<b>muito teste</b><br> Testando se funciona isso' // html body
+                };
+    
+                transporter.sendMail(mailOptions, (error: any, info: any) => {
+                    if(error){
+                        return console.log(error);
+                    }
+                
+                    console.log('Message sent: ' + info.response);
+                });
+
+            }
+
+            Swal.fire('Recuperação de senha', 'Se existir um login com o email digitado será enviado uma mensagem com a nova senha', 'info')
+
+        })
+
+    })
+
 
 })
 
