@@ -8,7 +8,7 @@
 
         "email": "emanuel.scherer@meta.com.br",
         "senha": "aaa",
-        "oneUse": true,
+        "oneUse": false,
         "trello": "emanuelscherer5"
 
     },

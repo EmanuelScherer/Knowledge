@@ -29,14 +29,7 @@
 
 		<!-- Nav -->
         <nav id="nav" style="background-color: #22323f;">
-            <ul class="links">
-                <li><a href="./index.html">Home</a></li>
-                <li><a href="#" ><strike>Documentação</strike></a></li>
-                <li><a href="./meeting.html">Team Meeting</a></li>
-                <li><a href="#" ><strike>Conhecimentos</strike></a></li>
-                <li><a href="./sobre.html">Sobre</a></li>
-                <li><a href="./conta.html">Minha Conta</a></li>
-            </ul>
+            
         </nav>
 
 		<!-- Banner -->
@@ -84,6 +77,12 @@
         <script>window.$ = window.jQuery = require('jquery');</script>
 
         <script>let exports = {};</script>
+
+        <script>
+            $(function(){
+              $("#nav").load("./components/nav.html");
+            });
+        </script>
 
         <script src="../update.js"></script>
 

@@ -29,14 +29,7 @@
 
 		<!-- Nav -->
         <nav id="nav" style="background-color: #22323f;">
-            <ul class="links">
-                <li><a href="./index.html">Home</a></li>
-                <li><a href="#" ><strike>Documentação</strike></a></li>
-                <li><a href="./meeting.html">Team Meeting</a></li>
-                <li><a href="#" ><strike>Conhecimentos</strike></a></li>
-                <li><a href="./sobre.html">Sobre</a></li>
-                <li><a href="./conta.html">Minha Conta</a></li>
-            </ul>
+            
         </nav>
 
 		<!-- Banner -->
@@ -66,19 +59,19 @@
                 <header class="major narrow	">
                     <h2>Desenvolvimento</h2>
                     <p>
-                        Versão atual: 0.1.0
+                        Versão atual: 0.2.0
                     </p>
 
                     <p>
-                        + Sistema de atualização de meetings<br>
-                        + Instalador para windows<br>
-                        + Atualização automatica para novas versões (Windows)<br>
-                        -> Ideias para Documentação<br>
-                        -> Ideias para Guardar Conhecimentos<br>
+                        + Sistema de login<br>
+                        + Icones<br>
+                        + Proximos passos no sobre<br>
+                        ! Auto Update melhorado<br>
+                        ! Nav melhorado<br>
                     </p>
                     <br>
                     <p>
-                        Estamos abertos para sugestoes novas :)
+                        Estamos abertos para sugestões novas :)
                     </p>
 
                 </header>
@@ -108,7 +101,8 @@
                         + emfn<br>
                         + axios<br>
                         + electron-dl<br>
-                        + open-file-explorer
+                        + open-file-explorer<br>
+                        + GCLOUD FireStore
 
                     </p>
 
@@ -146,9 +140,53 @@
                     <p>
                         Emanuel de Souza Scherer - Dev Geral<br>
                         Eric Hertzog Silveira - Ideias e Testes<br>
-                        Joao Leonardo dos Santos Larrosa - Ideias <br>
+                        Joao Leonardo dos Santos Larrosa - Banco de Dados e Ideias <br>
                     </p>
 
+                </header>
+            </div>
+        </section>
+
+        <section id="4" class="wrapper special" style="background-color: #22323f;">
+            <div class="inner">
+                <header class="major narrow">
+                    <h2 style="color: white;">Proximos passos</h2>
+                    <p style="color: white;">
+                        
+                        Sistema de login
+
+                    </p>
+                    <p style="color: white;">
+                        
+                        -> Criar conta<br>
+                        -> Permissões
+
+                    </p>
+                    <p style="color: white; font-size: 1.25em;">
+                        
+                        Sistema de meetings
+
+                    </p>
+                    <p style="color: white;">
+                        
+                        -> Criar time<br>
+                        -> Permissões
+
+                    </p>
+                    <p style="color: white; font-size: 1.25em;">
+                        
+                        Sistema de conhecimentos
+
+                    </p>
+                    <p style="color: white;">
+                        
+                        -> Começar as telas<br>
+                        -> Planejar como guardar informações<br>
+                        -> Planejar quais informações guardar<br>
+
+                    </p>
+
+                    
                 </header>
             </div>
         </section>
@@ -167,6 +205,12 @@
         <script>window.$ = window.jQuery = require('jquery');</script>
 
         <script>let exports = {};</script>
+
+        <script>
+            $(function(){
+              $("#nav").load("./components/nav.html");
+            });
+        </script>
 
         <script src="../update.js"></script>
 

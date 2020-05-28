@@ -15,6 +15,8 @@ let b = false
 
 let LoginCookie = ""
 
+electron.ipcRenderer.send("SetLogin", undefined)
+
 electron.remote.session.defaultSession.cookies.get({name: 'login'}).then((Cookies) => {
     
     const r = Cookies[0].value.split(",")

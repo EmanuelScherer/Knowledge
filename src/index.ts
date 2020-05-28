@@ -18,7 +18,8 @@ function createWindow() {
 		webPreferences: {
 			nodeIntegration: true,
 			nodeIntegrationInWorker: true
-		}
+		},
+		icon: app.getAppPath() + "/icons/Brain_Knowledge.ico"
 	})
 
 	let menu = Menu.buildFromTemplate([
@@ -59,6 +60,8 @@ function createWindow() {
 		}
 	])
 	Menu.setApplicationMenu(menu); 
+
+	app.clearRecentDocuments()
 
 	globalAny.win = win
 
