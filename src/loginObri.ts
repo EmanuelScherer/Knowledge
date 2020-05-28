@@ -90,54 +90,36 @@ interface OConfig {
 const login = electron.remote.getGlobal('login') as OConfig
 
 if (login == undefined || login == null) {
+
     Swal.fire('Não autenticado', 'Você deve entrar na sua conta para ver essa pagina', 'warning')
-        .then(() => {
-            electron.remote.getGlobal('win').loadFile('./html/login.html');
-    });
+    .then(() => {
+
+        electron.remote.getGlobal('win').loadFile('./html/login.html')
+
+    })
+
 }
 else {
 
-    const nome: HTMLInputElement = document.querySelector("input#nome") as HTMLInputElement
-    const area: HTMLInputElement = document.querySelector("input#area") as HTMLInputElement
-    const email: HTMLInputElement = document.querySelector("input#email") as HTMLInputElement
-    const senha: HTMLInputElement = document.querySelector("input#senha") as HTMLInputElement
-    const trello: HTMLInputElement = document.querySelector("input#trello") as HTMLInputElement
-
-    nome.value = login.name
-    area.value = login.area
-    email.value = login.login.email
-    trello.value = login.login.trello
-
     if (login.login.oneUse) {
 
-        senha.value = ""
+        Swal.fire('Senha de uso unico', 'A senha usada é de uso unico, por favor crie uma nova senha', 'info')
+        .then(() => {
 
-    }
-    else {
-
-        senha.value = login.login.senha
-
-    }
-
-    const times = document.querySelector("div#times") as HTMLDivElement
-
-    for (let t in login.teams) {
-
-        const bt = document.createElement("input")
-
-        bt.type = "button"
-        bt.name = login.teams[t].name
-        bt.value = login.teams[t].name
-        bt.className = "big fit"
-
-        bt.addEventListener("click", () => {
-
-            electron.ipcRenderer.send('SetTime', login.teams[t])
-            electron.remote.getGlobal('win').loadFile('./html/time.html')
+            electron.remote.getGlobal('win').loadFile('./html/conta.html')
 
         })
 
-        times.appendChild(bt)
+    }
+
+    if (login.login.trello == "" || login.login.trello == null || login.login.trello == undefined) {
+
+        Swal.fire('Sem trello configurado', 'A sua conta não possui trello vinculado, por favor vincule seu trello', 'info')
+        .then(() => {
+
+            electron.remote.getGlobal('win').loadFile('./html/conta.html')
+
+        })
 
     }
 

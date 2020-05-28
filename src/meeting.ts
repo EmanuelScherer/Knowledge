@@ -44,6 +44,7 @@ else {
 
             "email": string,
             "senha": string,
+            "oneUse": true,
             "trello": string
 
         },
