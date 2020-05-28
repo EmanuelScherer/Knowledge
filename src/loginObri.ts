@@ -1,5 +1,5 @@
-import * as electron from 'electron'
-import Swal from 'sweetalert2'
+import * as electronObri from 'electron'
+import SwalObri from 'sweetalert2'
 
 interface OConfig {
 
@@ -87,14 +87,14 @@ interface OConfig {
 
 }
 
-const login = electron.remote.getGlobal('login') as OConfig
+const login = electronObri.remote.getGlobal('login') as OConfig
 
 if (login == undefined || login == null) {
 
-    Swal.fire('Não autenticado', 'Você deve entrar na sua conta para ver essa pagina', 'warning')
+    SwalObri.fire('Não autenticado', 'Você deve entrar na sua conta para ver essa pagina', 'warning')
     .then(() => {
 
-        electron.remote.getGlobal('win').loadFile('./html/login.html')
+        electronObri.remote.getGlobal('win').loadFile('./html/login.html')
 
     })
 
@@ -103,10 +103,10 @@ else {
 
     if (login.login.oneUse) {
 
-        Swal.fire('Senha de uso unico', 'A senha usada é de uso unico, por favor crie uma nova senha', 'info')
+        SwalObri.fire('Senha de uso unico', 'A senha usada é de uso unico, por favor crie uma nova senha', 'info')
         .then(() => {
 
-            electron.remote.getGlobal('win').loadFile('./html/conta.html')
+            electronObri.remote.getGlobal('win').loadFile('./html/conta.html')
 
         })
 
@@ -114,10 +114,10 @@ else {
 
     if (login.login.trello == "" || login.login.trello == null || login.login.trello == undefined) {
 
-        Swal.fire('Sem trello configurado', 'A sua conta não possui trello vinculado, por favor vincule seu trello', 'info')
+        SwalObri.fire('Sem trello configurado', 'A sua conta não possui trello vinculado, por favor vincule seu trello', 'info')
         .then(() => {
 
-            electron.remote.getGlobal('win').loadFile('./html/conta.html')
+            electronObri.remote.getGlobal('win').loadFile('./html/conta.html')
 
         })
 

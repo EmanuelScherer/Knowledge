@@ -11,45 +11,56 @@ const ProgressBarHome = electronaaaaaaaaaaaaa.remote.getGlobal('ProgressBar');
 const downloadHome = electronaaaaaaaaaaaaa.remote.getGlobal('download');
 const fsHome = require('fs-extra');
 const openExplorerHome = require('open-file-explorer');
+const { ipcRenderer } = require('electron');
 const loginHome = electronaaaaaaaaaaaaa.remote.getGlobal('login');
 console.log("Login: " + JSON.stringify(loginHome));
 
 const Will = async () => {
-    electronaaaaaaaaaaaaa.remote.getGlobal('win').webContents.session.on('will-download', (e, item, webContents) => {
-        e.preventDefault();
-        console.log("Baixando arquivo...");
-        const progressBar = new ProgressBarHome({
-            text: 'Baixando update...',
-            detail: 'Espere...',
-            title: 'Baixando...',
-            indeterminate: false
-        });
-        progressBar.on('completed', function () {
-            console.log("Update baixado");
-            progressBar.detail = 'Baixado. Fechando...';
-        });
-        progressBar.on('aborted', function () {
-            console.info(`get abortado`);
-            SwalHome.default.fire('Erro no  download', 'error');
-        });
-        item.on('updated', (event, state) => {
-            if (state === 'progressing') {
-                if (!progressBar.isCompleted()) {
-                    progressBar.detail = Number(item.getReceivedBytes() / 1048576).toFixed(2) + "mb baixados de " + Number(item.getTotalBytes() / 1048576).toFixed(2) + "mb";
-                    progressBar.value = item.getReceivedBytes() / item.getTotalBytes() * 100;
+
+    console.log("DownloadFallback: "+electronaaaaaaaaaaaaa.remote.getGlobal('DownloadFallback'))
+
+    if (!electronaaaaaaaaaaaaa.remote.getGlobal('DownloadFallback')) {
+
+        electronaaaaaaaaaaaaa.remote.getGlobal('win').webContents.session.on('will-download', (e, item, webContents) => {
+            e.preventDefault();
+            console.log("Baixando arquivo...");
+            const progressBar = new ProgressBarHome({
+                text: 'Baixando update...',
+                detail: 'Espere...',
+                title: 'Baixando...',
+                indeterminate: false
+            });
+            progressBar.on('completed', function () {
+                console.log("Update baixado");
+                progressBar.detail = 'Baixado. Fechando...';
+            });
+            progressBar.on('aborted', function () {
+                console.info(`get abortado`);
+                SwalHome.default.fire('Erro no  download', 'error');
+            });
+            item.on('updated', (event, state) => {
+                if (state === 'progressing') {
+                    if (!progressBar.isCompleted()) {
+                        progressBar.detail = Number(item.getReceivedBytes() / 1048576).toFixed(2) + "mb baixados de " + Number(item.getTotalBytes() / 1048576).toFixed(2) + "mb";
+                        progressBar.value = item.getReceivedBytes() / item.getTotalBytes() * 100;
+                    }
                 }
-            }
+            });
+            item.once('done', (event, state) => {
+                if (state === 'completed') {
+                    console.log('Download completo');
+                }
+                else {
+                    console.log(`Download falha: ${state}`);
+                    progressBar.close();
+                }
+            });
         });
-        item.once('done', (event, state) => {
-            if (state === 'completed') {
-                console.log('Download completo');
-            }
-            else {
-                console.log(`Download falha: ${state}`);
-                progressBar.close();
-            }
-        });
-    });
+
+        ipcRenderer.send('DownloadFallback', true)
+
+    }
+
 }
 
 const Update = async () => {

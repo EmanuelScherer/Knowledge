@@ -108,10 +108,17 @@ app.whenReady().then(() => {
 	globalAny.ProgressBar = ProgressBar
 	globalAny.app = app
 	globalAny.download = download
+	globalAny.DownloadFallback = false
 
 	createWindow()
 
 	win.maximize()
+
+})
+
+ipcMain.on('DownloadFallback', (event, value) => {
+
+	globalAny.DownloadFallback = value
 
 })
 
