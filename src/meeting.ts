@@ -3232,17 +3232,27 @@ else {
     
     }
 
-    const time = electron.remote.getGlobal('time') as Time
-    const userg = electron.remote.getGlobal('user') as User
+    const time = electron.remote.getGlobal('time') as Time | string
+    const userg = electron.remote.getGlobal('user') as User | string
 
     if (time != null && time != undefined) {
 
         if (select_team != undefined) {
 
-            select_team.value = time.name
-            change_team()
+            if (typeof(time) != "string") {
 
-            electron.ipcRenderer.send("SetTime", "")
+                select_team.value = time.name
+                change_team()
+
+                electron.ipcRenderer.send("SetTime", "")
+
+            }
+            else {
+
+                select_team.value = ""
+                change_team()
+
+            }
 
         }
 
@@ -3252,10 +3262,20 @@ else {
 
         if (select_user != undefined) {
 
-            select_user.value = userg.name
-            change_user()
+            if (typeof(userg) != "string") {
 
-            electron.ipcRenderer.send("SetUser", "")
+                select_user.value = userg.name
+                change_user()
+
+                electron.ipcRenderer.send("SetUser", "")
+
+            }
+            else {
+
+                select_user.value = ""
+                change_user()
+
+            }
 
         }
 
