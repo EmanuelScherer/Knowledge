@@ -13,6 +13,8 @@ const win = electron.remote.getGlobal('win') as electron.BrowserWindow
 const Input_Login: HTMLInputElement | null = document.querySelector("input#InpLogin")
 const Input_Senha: HTMLInputElement | null = document.querySelector("input#InpSenha")
 
+console.log(electron.remote.getGlobal('app').getAppPath())
+
 const esqueci = document.querySelector("a#esqueci") as HTMLLinkElement
 
 let b = false
