@@ -1,6 +1,7 @@
 import * as electron from 'electron';
 import Swal from 'sweetalert2';
 import axios, { AxiosResponse } from 'axios'
+import * as fs from 'fs'
 
 const bd = require('../DataBase/connect.js')
 const nodemailer = require('nodemailer')
@@ -84,6 +85,10 @@ esqueci.addEventListener("click", () => {
 
             if (user.existe) {
 
+                let html = fs.readFileSync(electron.remote.getGlobal('app').getAppPath()+"/html/components/email.html", "utf-8")
+
+                console.log(html)
+
                 let transporter = nodemailer.createTransport({
                     host: "smtp-mail.outlook.com", // hostname
                     secureConnection: false, // TLS requires secureConnection to be false
@@ -100,9 +105,9 @@ esqueci.addEventListener("click", () => {
                 let mailOptions = {
                     from: 'Knowledge <emanuel.scherer@meta.com.br>', // sender address (who sends)
                     to: user.email, // list of receivers (who receives)
-                    subject: 'teste', // Subject line
+                    subject: 'Recuperação de senha knowledge', // Subject line
                     //text: 'teste', // plaintext body
-                    html: '<b>muito teste</b><br> Testando se funciona isso' // html body
+                    html: html // html body
                 };
     
                 transporter.sendMail(mailOptions, (error: any, info: any) => {
