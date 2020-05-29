@@ -77,55 +77,59 @@ esqueci.addEventListener("click", () => {
             title: "Recuperação de senha",
             text: "Digite o email da conta",
             icon: "info",
+            validationMessage: "Email invalido"
         }
     ]).then(r => {
 
-        bd.GetUser(r.value[0])
-        .then((user: User) => {
+        if (r.value != undefined) {
 
-            if (user.existe) {
+            bd.GetUser(r.value[0])
+            .then((user: User) => {
 
-                let html = fs.readFileSync(electron.remote.getGlobal('app').getAppPath()+"/html/components/email.html", "utf-8")
+                if (user.existe) {
 
-                console.log(html)
+                    let html = fs.readFileSync(electron.remote.getGlobal('app').getAppPath()+"/html/components/email.html", "utf-8")
 
-                let transporter = nodemailer.createTransport({
-                    host: "smtp-mail.outlook.com", // hostname
-                    secureConnection: false, // TLS requires secureConnection to be false
-                    port: 587, // port for secure SMTP
-                    tls: {
-                       ciphers:'SSLv3'
-                    },
-                    auth: {
-                        user: 'emanuel.scherer@meta.com.br',
-                        pass: 'qUkS@Skv1'
-                    }
-                });
-    
-                let mailOptions = {
-                    from: 'Knowledge <emanuel.scherer@meta.com.br>', // sender address (who sends)
-                    to: user.email, // list of receivers (who receives)
-                    subject: 'Recuperação de senha knowledge', // Subject line
-                    //text: 'teste', // plaintext body
-                    html: html // html body
-                };
-    
-                transporter.sendMail(mailOptions, (error: any, info: any) => {
-                    if(error){
-                        return console.log(error);
-                    }
-                
-                    console.log('Message sent: ' + info.response);
-                });
+                    console.log(html)
 
-            }
+                    let transporter = nodemailer.createTransport({
+                        host: "smtp-mail.outlook.com", // hostname
+                        secureConnection: false, // TLS requires secureConnection to be false
+                        port: 587, // port for secure SMTP
+                        tls: {
+                        ciphers:'SSLv3'
+                        },
+                        auth: {
+                            user: 'emanuel.scherer@meta.com.br',
+                            pass: 'qUkS@Skv1'
+                        }
+                    });
+        
+                    let mailOptions = {
+                        from: 'Knowledge <emanuel.scherer@meta.com.br>', // sender address (who sends)
+                        to: user.email, // list of receivers (who receives)
+                        subject: 'Recuperação de senha knowledge', // Subject line
+                        //text: 'teste', // plaintext body
+                        html: html // html body
+                    };
+        
+                    transporter.sendMail(mailOptions, (error: any, info: any) => {
+                        if(error){
+                            return console.log(error);
+                        }
+                    
+                        console.log('Message sent: ' + info.response);
+                    });
 
-            Swal.fire('Recuperação de senha', 'Se existir um login com o email digitado será enviado uma mensagem com a nova senha', 'info')
+                }
 
-        })
+                Swal.fire('Recuperação de senha', 'Se existir um login com o email digitado será enviado uma mensagem com a nova senha', 'info')
+
+            })
+
+        }
 
     })
-
 
 })
 
