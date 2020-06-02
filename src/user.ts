@@ -1,5 +1,6 @@
 import * as electron from 'electron'
 import Swal from 'sweetalert2'
+import {Time, Login, User} from '../utils/tipos'
 
 const login = electron.remote.getGlobal('login')
 
@@ -12,91 +13,6 @@ if (login == undefined || login == null || login == {}) {
 else {
 
     const bd = require('../DataBase/connect.js')
-
-    interface User {
-
-    "name": string,
-
-    "area": string,
-
-    "email": string,
-
-    "teams": [
-
-        {
-
-            "name": string
-            
-        }
-
-    ]   
-
-    }
-
-    interface Time {
-
-    "name": string,
-
-    "trello": {
-
-        "board": string,
-        
-        "lists": [
-
-            {
-
-                "name": "To Do",
-                "id": string
-
-            },
-            {
-
-                "name": "Doing",
-                "id": string
-
-            },
-            {
-
-                "name": "Done",
-                "id": string
-
-            },
-            {
-
-                "name": "Blocked",
-                "id": string
-
-            },
-
-            {
-
-                "name": "Deliveries",
-                "id": string
-
-            },
-
-            {
-
-                "name": "Past",
-                "id": string
-
-            }
-
-        ]
-
-    },
-
-    "users" : [
-
-        {
-            "name": string,
-            "id": string,
-            "login": string
-        }
-
-    ]
-
-    }
 
     const user = electron.remote.getGlobal('user') as User
 

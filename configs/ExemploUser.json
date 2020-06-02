@@ -1,10 +1,14 @@
 {
 
+    "existe": true,
+
     "name": "Emanuel",
 
     "area": "Innovation Center",
 
     "email": "emanuel.scherer@meta.com.br",
+
+    "acesso": 1,
 
     "teams": [
 

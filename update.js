@@ -41,7 +41,7 @@ const Will = async () => {
             item.on('updated', (event, state) => {
                 if (state === 'progressing') {
                     if (!progressBar.isCompleted()) {
-                        progressBar.detail = Number(item.getReceivedBytes() / 1048576).toFixed(2) + "mb baixados de " + Number(item.getTotalBytes() / 1048576).toFixed(2) + "mb";
+                        progressBar.detail = Number(item.getReceivedBytes() / 1048576).toFixed(2) + "MB baixados de " + Number(item.getTotalBytes() / 1048576).toFixed(2) + "MB";
                         progressBar.value = item.getReceivedBytes() / item.getTotalBytes() * 100;
                     }
                 }
@@ -64,7 +64,7 @@ const Will = async () => {
 }
 
 const Update = async () => {
-    await fsHome.emptyDir(electronaaaaaaaaaaaaa.remote.getGlobal('app').getAppPath() + "/instaladores");
+    await fsHome.emptyDir(electronaaaaaaaaaaaaa.remote.getGlobal('app').getAppPath().replace("\\app.asar", "\\app.asar.unpacked") + "/instaladores");
     await axiosHome.default.get("https://api.github.com/repos/EmanuelScherer/Knowledge/releases/latest")
         .then(async (r) => {
 
@@ -91,12 +91,12 @@ const Update = async () => {
 
                 SwalHome.fire({
                     title: 'Update!',
-                    text: 'Novo update: v' + Atual + " -> v" + Last + '. Ele será baixado e instalado agora',
+                    text: 'Novo update: v' + packHome.version + " -> v" + r.data.name + '. Ele será baixado e instalado agora',
                     icon: 'warning',
                     showCancelButton: false,
                 })
                 .then(async (result) => {
-                    await downloadHome(electronaaaaaaaaaaaaa.remote.getGlobal('win'), r.data.assets[0].browser_download_url, { directory: electronaaaaaaaaaaaaa.remote.getGlobal('app').getAppPath() + '/instaladores' });
+                    await downloadHome(electronaaaaaaaaaaaaa.remote.getGlobal('win'), r.data.assets[0].browser_download_url, { directory: electronaaaaaaaaaaaaa.remote.getGlobal('app').getAppPath().replace("\\app.asar", "\\app.asar.unpacked") + '/instaladores' });
                     SwalHome.default.fire({
                         title: 'Update!',
                         text: 'Update baixado. O programa será fechado para adicionar o update',
@@ -104,7 +104,7 @@ const Update = async () => {
                         showCancelButton: false,
                     })
                         .then(async (result) => {
-                        openExplorerHome(electronaaaaaaaaaaaaa.remote.getGlobal('app').getAppPath() + '\\instaladores\\' + r.data.assets[0].name, (err) => {
+                        openExplorerHome(electronaaaaaaaaaaaaa.remote.getGlobal('app').getAppPath().replace("\\app.asar", "\\app.asar.unpacked") + '\\instaladores\\' + r.data.assets[0].name, (err) => {
                             if (err) {
                                 console.log(err);
                                 SwalHome.default.fire('Erro', 'O programa não pode abrir o explorador de arquivos', 'error');

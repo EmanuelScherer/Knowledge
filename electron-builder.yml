@@ -1,5 +1,7 @@
 appId: com.inov.knowledge
-asar: false
+asar: true
+asarUnpack:
+  - "instaladores"
 
 win: 
   target:

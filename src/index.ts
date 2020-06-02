@@ -103,7 +103,7 @@ app.whenReady().then(() => {
 
 	// })
 
-	const ProgressBar = require('../src/electron-progressbar/source/index')
+	const ProgressBar = require('../../src/electron-progressbar/source/index')
 
 	globalAny.ProgressBar = ProgressBar
 	globalAny.app = app
@@ -141,12 +141,10 @@ ipcMain.on('SetUser', (event, value) => {
 })
 
 // Quit when all windows are closed.
-app.on('window-all-closed', async () => {
+app.on('window-all-closed', () => {
 	// No macOS é comum para aplicativos e sua barra de menu 
 	// permaneçam ativo até que o usuário explicitamente encerre com Cmd + Q
 	if (process.platform !== 'darwin') {
-		
-		await fs.emptyDir(app.getAppPath()+'/instaladores')
 
 		app.quit()
 

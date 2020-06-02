@@ -4,6 +4,8 @@
 
     "area": "Innovation Center",
 
+    "acesso": 2,
+
     "login": {
 
         "email": "emanuel.scherer@meta.com.br",
@@ -73,57 +75,68 @@
                 {
                     "name": "Emanuel",
                     "id": "5e2b22035793c41dd1018cf5",
-                    "login": "emanuel.scherer@meta.com.br"
+                    "login": "emanuel.scherer@meta.com.br",
+                    "cargo": "ADM"
                 },
                 {
                     "name": "João",
-                    "id": "",
-                    "login": ""
+                    "id": "5e23aea55dde241618f5bed3",
+                    "login": "",
+                    "cargo": "Membro"
                 },
                 {
                     "name": "Eric",
                     "id": "5e21d929294f947614eba3b2",
-                    "login": ""
+                    "login": "",
+                    "cargo": "Membro"
                 },
                 {
                     "name": "Nicolas",
-                    "id": "",
-                    "login": ""
+                    "id": "5e2200361dfed54268d5b094",
+                    "login": "",
+                    "cargo": "Membro"
                 },
                 {
                     "name": "Thiago",
-                    "id": "",
-                    "login": ""
+                    "id": "595fd6856c008ed0446fe40f",
+                    "login": "",
+                    "cargo": "Membro"
                 },
                 {
                     "name": "Claudio",
-                    "id": "",
-                    "login": ""
+                    "id": "5ca4e27979e1588f27e7d814",
+                    "login": "",
+                    "cargo": "Membro"
                 },
                 {
                     "name": "Makisine",
-                    "id": "",
-                    "login": ""
+                    "id": "5e2746b2c08b7b82a25226f6",
+                    "login": "",
+                    "cargo": "Membro"
                 },
                 {
                     "name": "Leonardo",
-                    "id": "",
-                    "login": ""
+                    "id": "5e2200386c7e4d159bbc2da4",
+                    "login": "",
+                    "cargo": "Membro"
                 },
                 {
                     "name": "Fabrico",
-                    "id": "",
-                    "login": ""
+                    "id": "5cab391f4354817bdc71707b",
+                    "login": "",
+                    "cargo": "Membro"
                 },
                 {
                     "name": "Romulo",
-                    "id": "",
-                    "login": ""
+                    "id": "5ca4e9b33758e728fca4d72f",
+                    "login": "",
+                    "cargo": "Membro"
                 },
                 {
                     "name": "Brendan",
-                    "id": "",
-                    "login": ""
+                    "id": "538c98b141f1c6dd5b9481e9",
+                    "login": "",
+                    "cargo": "ADM"
                 }
 
             ]

@@ -1,0 +1,147 @@
+<!DOCTYPE HTML>
+<!--
+    Esse html usa um template:
+
+        Retrospect by TEMPLATED
+        templated.co @templatedco
+        Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
+-->
+<html>
+	<head>
+
+		<title>Knowledge Dev Version</title>
+		<meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <script>window.$ = window.jQuery = require('jquery');</script>
+
+        <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+
+		<link rel="stylesheet" href="../templates/templated-retrospect/assets/css/main.css" />
+        <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+
+        <link rel="stylesheet" href="../css/index.css" />
+
+    </head>
+	<body class="landing">
+
+		<!-- Header -->
+        <header id="header" class="alt">
+            <h1><a href="index.html"><i class="fas fa-brain"></i> Knowledge</a></h1>
+            <a href="#nav">Menu</a>
+        </header>
+
+		<!-- Nav -->
+        <nav id="nav" style="background-color: #22323f;">
+
+
+
+        </nav>
+
+		<!-- Banner -->
+        <section id="banner">
+
+            <i class="icon fas fa-users-cog"></i>
+            <h2>Criar novo time</h2>
+
+        </section>
+
+        <form id="NovoTime" style="margin: 0 0 0 0;">
+
+            <section id="1" class="wrapper special" style="background-color: #22323f;">
+                <div class="inner">
+
+                        <header class="major narrow">
+                            <h2 style="color: white;">Informações</h2>
+
+                            <ul style="list-style-type: none; display: inline-block; width: 600px; margin-bottom: 10px; padding-left: 0;">
+
+                                <li style="display: inline-block;"><label for="nome" style="color: white; margin-bottom: 0;">Nome:</label></li>
+                                <li style="display: inline-block;"><input type="text" id="nome" placeholder="Digite o nome do time..." style="width: 500px;" required></li>
+                    
+                            </ul>
+
+                            <ul style="list-style-type: none; display: inline-block; width: 600px; margin-bottom: 10px; padding-left: 0;">
+
+                                <li style="display: inline-block;"><label for="area" style="color: white; margin-bottom: 0;">Area:&nbsp;&nbsp;</label></li>
+                                <li style="display: inline-block;"><input type="text" id="area" placeholder="Digite sua area..." style="width: 500px;" required disabled></li>
+                    
+                            </ul>
+
+                        </header>
+                    
+                </div>
+            </section>
+
+            <section id="2" class="wrapper style3 special">
+                <div class="inner">
+                    <header class="major narrow	">
+                        <h2>Membros</h2>
+
+                        <div id='membros'>
+
+                            <button class="big fit" id="UserADM" type="button" disabled style="opacity: 100;">USER ADM</button>
+
+                        </div>
+
+                    </header>
+                </div>
+
+                <div>
+
+                    <br>
+                    <button class="big special" id="AddMember" type="button">Add Membro</button>
+
+                </div>
+
+            </section>
+
+            <section id="3" class="wrapper special" style="background-color: #22323f;">
+                <div class="inner">
+
+                    <header class="major narrow">
+                            
+                        <button type="submit" class="big alt" id="CriarTime">Criar time
+
+                    </header>
+                    
+                </div>
+            </section>
+
+        </form>
+
+		<!-- Footer -->
+        <footer id="footer">
+            <div class="inner">
+                <ul class="copyright">
+                    <li>&copy; Meta Innovation Center.</li>
+                    <li>Images: <a href="http://unsplash.com" target="_blanck">Unsplash</a>.</li>
+                    <li>Design: <a href="https://templated.co/retrospect" target="_blanck">TEMPLATED (Retrospect)</a>.</li>
+                </ul>
+            </div>
+        </footer>
+
+        <script>window.$ = window.jQuery = require('jquery');</script>
+
+        <script>let exports = {};</script>
+
+        <script>
+            $(function(){
+              $("#nav").load("./components/nav.html");
+            });
+        </script>
+
+        <script src="../update.js"></script>
+
+        <script src="../BUILD/src/criaTime.js"></script>
+
+        <script src="../node_modules/@fortawesome/fontawesome-free/js/all.min.js"></script>
+
+        <!-- Scripts -->
+        <script src="../templates/templated-retrospect/assets/js/jquery.min.js"></script>
+        <script src="../templates/templated-retrospect/assets/js/skel.min.js"></script>
+        <script src="../templates/templated-retrospect/assets/js/util.js"></script>
+        <script src="../templates/templated-retrospect/assets/js/main.js"></script>
+
+	</body>
+</html>

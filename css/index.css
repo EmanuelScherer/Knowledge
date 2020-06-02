@@ -122,3 +122,23 @@ input {
     color: white !important;
 
 }
+
+.swal2-validation-message {
+
+    color: white !important;
+    background-color: #2b3f4e !important;
+
+}
+
+.swal2-select {
+
+    background: #2b3f4e !important;
+    color: white !important;
+
+}
+
+.swal2-styled.swal2-cancel {
+
+    padding: 0 !important;
+
+}

@@ -56,57 +56,68 @@
         {
             "name": "Emanuel",
             "id": "5e2b22035793c41dd1018cf5",
-            "login": "emanuel.scherer@meta.com.br"
+            "login": "emanuel.scherer@meta.com.br",
+            "cargo": "Membro"
         },
         {
             "name": "João",
             "id": "",
-            "login": ""
+            "login": "",
+            "cargo": "Membro"
         },
         {
             "name": "Eric",
             "id": "5e21d929294f947614eba3b2",
-            "login": ""
+            "login": "",
+            "cargo": "Membro"
         },
         {
             "name": "Nicolas",
             "id": "",
-            "login": ""
+            "login": "",
+            "cargo": "Membro"
         },
         {
             "name": "Thiago",
             "id": "",
-            "login": ""
+            "login": "",
+            "cargo": "Membro"
         },
         {
             "name": "Claudio",
             "id": "",
-            "login": ""
+            "login": "",
+            "cargo": "Membro"
         },
         {
             "name": "Makisine",
             "id": "",
-            "login": ""
+            "login": "",
+            "cargo": "Membro"
         },
         {
             "name": "Leonardo",
             "id": "",
-            "login": ""
+            "login": "",
+            "cargo": "Membro"
         },
         {
             "name": "Fabrico",
             "id": "",
-            "login": ""
+            "login": "",
+            "cargo": "Membro"
         },
         {
             "name": "Romulo",
             "id": "",
-            "login": ""
+            "login": "",
+            "cargo": "Membro"
         },
         {
             "name": "Brendan",
             "id": "",
-            "login": ""
+            "login": "",
+            "cargo": "ADM"
         }
 
     ]
