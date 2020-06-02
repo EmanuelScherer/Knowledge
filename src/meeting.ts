@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import axios, { AxiosResponse } from 'axios';
 import Swal from 'sweetalert2';
 import * as moment from 'moment';
+import {Time, Login, User} from '../utils/tipos'
 
 const login = electron.remote.getGlobal('login')
 
@@ -34,95 +35,9 @@ else {
     let NEscolido: String[] = []
     let UltimoEscolido: string = ""
 
-    interface OConfig {
+    let config: Login
 
-        "name": string,
-
-        "area": string,
-
-        "login": {
-
-            "email": string,
-            "senha": string,
-            "oneUse": true,
-            "trello": string
-
-        },
-
-        "teams": [
-
-            {
-
-                "name": string,
-
-                "trello": {
-
-                    "board": "",
-
-                    "lists": [
-
-                        {
-
-                            "name": "To Do",
-                            "id": ""
-
-                        },
-                        {
-
-                            "name": "Doing",
-                            "id": ""
-
-                        },
-                        {
-
-                            "name": "Done",
-                            "id": ""
-
-                        },
-                        {
-
-                            "name": "Blocked",
-                            "id": ""
-
-                        },
-                        {
-
-                            "name": "Deliveries",
-                            "id": ""
-
-                        },
-                        {
-
-                            "name": "Past",
-                            "id": ""
-
-                        }
-
-                    ]
-
-                },
-
-                "users": [
-
-                    {
-
-                        "name": string
-
-                        "id": string
-
-                    }
-
-                ]
-
-            }
-
-        ]
-
-    }
-
-    let config: OConfig
-
-    let configs: OConfig[] = []
+    let configs: Login[] = []
 
     const configsInDir = fs.readdirSync(electron.remote.getGlobal('app').getAppPath()+"\\configs")
 
@@ -3146,91 +3061,6 @@ else {
         }
 
     })
-    
-    interface Time {
-
-        "name": string,
-        
-        "trello": {
-
-            "board": string,
-            
-            "lists": [
-
-                {
-
-                    "name": "To Do",
-                    "id": string
-
-                },
-                {
-
-                    "name": "Doing",
-                    "id": string
-
-                },
-                {
-
-                    "name": "Done",
-                    "id": string
-
-                },
-                {
-
-                    "name": "Blocked",
-                    "id": string
-
-                },
-
-                {
-
-                    "name": "Deliveries",
-                    "id": string
-
-                },
-
-                {
-
-                    "name": "Past",
-                    "id": string
-
-                }
-
-            ]
-
-        },
-
-        "users" : [
-
-            {
-                "name": string,
-                "id": string,
-                "login": string
-            }
-
-        ]
-
-    }
-
-    interface User {
-
-        "name": string,
-    
-        "area": string,
-    
-        "email": string,
-    
-        "teams": [
-    
-            {
-    
-                "name": string
-                
-            }
-    
-        ]   
-    
-    }
 
     const time = electron.remote.getGlobal('time') as Time | string
     const userg = electron.remote.getGlobal('user') as User | string

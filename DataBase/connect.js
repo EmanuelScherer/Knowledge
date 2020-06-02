@@ -1,5 +1,3 @@
-
-
 module.exports = {
 
     Login: (login, senha) => {
@@ -42,6 +40,20 @@ module.exports = {
     
         })
     
+    },
+
+    GetUsers: () => {
+
+        return new Promise((resolve) => {
+
+            //Codigo q pega todos os usuarios
+
+            const json = require(electron.remote.getGlobal('app').getAppPath()+"\\configs\\ExemploUsers.json") // <---- Const com o JSON dos usuarios
+
+            resolve(json)
+
+        })            
+
     }
 
 }

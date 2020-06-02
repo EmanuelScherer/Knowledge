@@ -2,6 +2,7 @@ import * as electron from 'electron';
 import Swal from 'sweetalert2';
 import axios, { AxiosResponse } from 'axios'
 import * as fs from 'fs'
+import {Time, Login, User} from '../utils/tipos'
 
 const bd = require('../DataBase/connect.js')
 const nodemailer = require('nodemailer')
@@ -45,28 +46,6 @@ electron.remote.session.defaultSession.cookies.get({}).then((Cookies) => {
     console.log(Cookies)
 
 })
-
-interface User {
-
-    "existe": boolean
-
-    "name": string,
-
-    "area": string,
-
-    "email": string,
-
-    "teams": [
-
-        {
-
-            "name": string
-            
-        }
-
-    ]   
-
-}
 
 esqueci.addEventListener("click", () => {
 

@@ -1,93 +1,8 @@
 import * as electron from 'electron'
 import Swal from 'sweetalert2'
+import {Time, Login, User} from '../utils/tipos'
 
-interface OConfig {
-
-    "name": string,
-
-    "area": string,
-
-    "login": {
-
-        "email": string,
-        "senha": string,
-        "oneUse": boolean,
-        "trello": string
-
-    },
-
-    "teams": [
-
-        {
-
-            "name": string,
-
-            "trello": {
-
-                "board": "",
-
-                "lists": [
-
-                    {
-
-                        "name": "To Do",
-                        "id": ""
-
-                    },
-                    {
-
-                        "name": "Doing",
-                        "id": ""
-
-                    },
-                    {
-
-                        "name": "Done",
-                        "id": ""
-
-                    },
-                    {
-
-                        "name": "Blocked",
-                        "id": ""
-
-                    },
-                    {
-
-                        "name": "Deliveries",
-                        "id": ""
-
-                    },
-                    {
-
-                        "name": "Past",
-                        "id": ""
-
-                    }
-
-                ]
-
-            },
-
-            "users": [
-
-                {
-
-                    "name": string
-
-                    "id": string
-
-                }
-
-            ]
-
-        }
-
-    ]
-
-}
-
-const login = electron.remote.getGlobal('login') as OConfig
+const login = electron.remote.getGlobal('login') as Login
 
 if (login == undefined || login == null) {
     Swal.fire('Não autenticado', 'Você deve entrar na sua conta para ver essa pagina', 'warning')
@@ -120,6 +35,8 @@ else {
     }
 
     const times = document.querySelector("div#times") as HTMLDivElement
+
+    const btAddTime = document.querySelector("button#NovoTime") as HTMLButtonElement
 
     for (let t in login.teams) {
 
