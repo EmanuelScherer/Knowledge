@@ -1,49 +1,29 @@
-const admin = require('firebase-admin');
-const axios = require('axios')
-const serviceAccountGCP = require('../DataBase/serviceAccountGCP.json');
-
-//Autenticação no Firestore
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccountGCP)
-});
-
-//Inicia cliente no Firestore
-const firestore = admin.firestore();
-
+const userClass = require('../DataBase/userClass.js')()
+const Team = require('../DataBase/teamClass.js')
+const dbConnection = require('../DataBase/dbConnection.js')()
 const con = require('electron').remote.getGlobal('console')
+
+const db = new dbConnection()
 
 module.exports = {
 
-    Login: (login, senha) => {
+    Login: (email, senha) => {
 
         return new Promise(async (resolve) => {
 
-            headers = {
-                'Authorization' : 'Bearer ya29.c.Ko8BzQd-uckqYd21K3FolieVDJlV7EiSXMXBpngfhxWjxkCfDlUBt2_YsLfR9wf49u1K_p2-zTKdNjZnZ2NB7hKQCma32PZIaFve8viZoc3KJPeM96u8KCtY2pPmxya041jxmrwPeFz-59-CDWL4H0VAY2dKrk9tBwBCRyuNXR0TL19MY_MxFSH2BBssYD_tLbk'
-            }
-
-            await axios.get('https://firestore.googleapis.com/v1/projects/planar-acronym-275514/databases/(default)/documents/KM_User_Profile/'+login, {headers: headers})
-            .then(result =>{
-                con.log(typeof(result))
-                if (senha == result.data.fields.login.mapValue.fields.password.stringValue) {
-                    con.log("Senha correta")
+            await db.authenticateUser(email, senha)
+            .then(result => {
+                con.log(result)
+                if (result.exists) {
+                    let User = new userClass(result.userData.data)
+                    let userJSON = User.generateUserJSON()
+                    resolve({ok: true, login: userJSON})
+                    return true
                 }
-            })
-            .catch(error => {
-                if (error.response.status == 404) {
-                    resolve(false)
-                    return false
-                } else if (error.request) {
-                    con.log(error.request);
-                } else {
-                    con.log('Error', error.message);
-                }
+                resolve(false)
+                return false
             })
 
-
-            const json = require(electron.remote.getGlobal('app').getAppPath()+"\\configs\\InovTeam.json") // <---- Const com o JSON do login
-
-            resolve({ok: true, login: json}) // <----- ok e se o login ta certo (true -> s, false -> n)
         })
             
 
@@ -53,22 +33,18 @@ module.exports = {
     
         return new Promise(async (resolve) => {
             
-            let userKMProfile;
-            let userKMProfileQuery = db.collection('KM_User_Profile').doc(email)
-            await userKMProfileQuery.get()
-            .then(doc => {
-                if(!doc.exists) {
-                    con.log("N tem essa porra")
-                    resolve(false)
-                    return false
-                } else {
-                    userKMProfile = doc.data()
+            await db.getUserData(email)
+            .then(userData => {
+                if (userData.request) {
+                    let User = new userClass(userData.data)
+                    let userJSON = User.generateUserJSON()
+                    resolve(userJSON)
+                    return userJSON
                 }
+                resolve(false)
+                return false
+
             })
-            con.log(userKMProfile)
-            const json = require(electron.remote.getGlobal('app').getAppPath()+"\\configs\\ExemploUser.json") // <---- Const com o JSON do usuario
-    
-            resolve(json)
     
         })
     
@@ -76,13 +52,21 @@ module.exports = {
     
     GetTeam: (name) => {
     
-        return new Promise((resolve) => {
+        return new Promise(async (resolve) => {
     
-            let teamKMProfileQuery = db.collection('KM_Teams').doc()
-    
-            const json = require(electron.remote.getGlobal('app').getAppPath()+"\\configs\\ExemploTeam.json") // <---- Const com o JSON do time
-    
-            resolve(json)
+            await db.getTeam(name)
+            .then(teamData => {
+                let team = new Team(teamData, name);
+                let teamJSON = team.generateTeamJSON();
+
+                resolve(teamJSON);
+                return teamJSON;
+            })
+            .catch(err => {
+                con.log(err)
+                resolve(false)
+                return(false)
+            })
     
         })
     
